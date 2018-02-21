@@ -15,7 +15,7 @@ Pyschological Background
 --
 This work looks at personas and personalities from a psychological point of view.
 
-Persona:
+*Persona*:
 
 noun: persona; plural noun: personae, personas
 
@@ -25,7 +25,7 @@ noun: persona; plural noun: personae, personas
 
 - a role or character adopted by an author or an actor
 
-Personality:
+*Personality*:
 
 noun: personality; plural noun: personalities
 
