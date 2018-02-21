@@ -17,21 +17,21 @@ This work looks at personas and personalities from a psychological point of view
 
 Persona:
 
-    noun: persona; plural noun: personae, personas
+noun: persona; plural noun: personae, personas
 
-    1. the aspect of someone's character that is presented to or perceived by others.
+1. the aspect of someone's character that is presented to or perceived by others.
 
-    "her public persona"
+"her public persona"
 
-    - a role or character adopted by an author or an actor
+- a role or character adopted by an author or an actor
 
 Personality:
 
-    noun: personality; plural noun: personalities
+noun: personality; plural noun: personalities
 
-    1. the combination of characteristics or qualities that form an individual's distinctive character.
+1. the combination of characteristics or qualities that form an individual's distinctive character.
 
-   - the set of habitual behaviors, cognitions and emotional patterns that evolve from biological and environmental factors 
+- the set of habitual behaviors, cognitions and emotional patterns that evolve from biological and environmental factors 
 
 The key difference is that the persona is shallow, while the personality is complex and defines the personas the person may depict.
 This work focuses specifically on simulating a static persona that is used to make an impression on the user in hopes of changing the user's mood to match that depicted by the persona.
@@ -52,7 +52,7 @@ The goal for this version is to aim for an open-domain, generative model with a 
 
 Requirements
 --
-Python 3+
-Numpy
-Scikit-Learn
-NLTK
+- Python 3+
+- Numpy
+- Scikit-Learn
+- NLTK
