@@ -14,6 +14,7 @@ In this version the Personality Profile is very simple, as a static and coherent
 Pyschological Background
 --
 This work looks at personas and personalities from a psychological point of view.
+As such, the distinction between persona and personality must be defined.
 
 **Persona**:
 
