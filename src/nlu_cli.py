@@ -88,6 +88,17 @@ class Personality:
     def set_attitude(selt, attitude):
         self._attitude = attitude
 
+    def json_dumps(self):
+        """
+        Returns json string of Personality for easy saving and addition to to
+        Personality Profile.
+        """
+        return {"personality":
+                    {"sentiment" : self._sentiment,
+                     "attitude": self._attitude
+                    }
+               }
+
 class Persona:
     """ Defines a Persona of a participant in the conversation. """
     # TODO add history of Personality dict of {turn count, Personality}
@@ -135,6 +146,28 @@ class Persona:
     def set_topic(self, topic, sentiment):
         self._topic_sentiment[topic] = sentiment
 
+    def store_personality_profile(self, path_output_json):
+        """ store personality profile (prototype's persona) into json """
+        with open(path_output_json, encoding='utf-8') as json_output:
+            # create dictionary structure of Personality Profile first:
+            profile = dict()
+
+            # create intricate parts if necessary
+            content = [
+                personality = self.personality.json_dump(),
+                preferences = {"preferences": topic_sentiment}
+            ]
+
+            # Then save all into final profile
+            profile["personality profile"] = {
+                key:value for d in content for key, value in d.items()
+            }
+
+            json_data = json.dump(profile,
+                                  json_output,
+                                  indent=4,
+                                  sort_keys=True)
+
 class Conversation_History:
     """
     Contains the conversation history with its NLU information.
@@ -164,9 +197,16 @@ class Conversation_History:
     def add_participant(self, participant):
         self._participants.append(participant)
 
-def load_personality_file(path_to_json):
+def load_personality_profile(path_to_json):
+    """ given a file path, loads the personality profile from json. """
+    # TODO Implement load_personality_profile from json
     with open(path_to_json, encoding='utf-8') as json_personality:
-        personality = json.load(json_personality)
+        profile = json.load(json_personality)
+
+        # Construct Personality Profile object from json decoded data
+
+
+    return
 
 def nlu_cli(default_mood):
     """ Command line interface for user to give all NLU data of utterance. """
@@ -188,6 +228,7 @@ def nlu_cli(default_mood):
     while dialogue_act not in da_names:
         dialogue_act = input("Enter dialogue Act").strip().lower()
 
+        # TODO fix help print out descriptions
         if first and dialogue_act not in da_names:
             first = False
             # Help, details what each dialogue act means.
