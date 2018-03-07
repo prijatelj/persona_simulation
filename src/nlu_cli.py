@@ -21,20 +21,50 @@ from enum import Enum
 import json
 
 class Dialogue_Act(Enum):
-    """ Dialogue Act tag set. Shirberg et.al 1998"""
-    statement           = 1
-    statement_description   = 1.1
-    statement_opinion       = 1.2
-    question            = 2
-    question_yes_no         = 2.1
-    question_wh             = 2.2
-    question_declarative    = 2.3
-    question_open           = 2.4
-    backchannels        = 3
-    incomplete_units    = 4
-    agreements          = 5
-    appreciations       = 6
-    other               = 7
+    """
+    Customized dialogue acts. Inspired by the dialogue act tag sets by
+    Shirberg et. al 1998, and Megura et. al 2010.
+    """
+    #statement              = 100
+    statement_fact          = 101
+    statement_experience    = 102
+    statement_preference    = 103
+    statement_opinion       = 104
+    statement_desire        = 105
+    statement_plan          = 106
+
+    #question               = 200
+    #question_yes_no         = 201
+    #question_declarative    = 202 # y/n question. a declaration in form of a q
+    #question_wh             = 203
+    #question_open           = 204
+
+    # May be unnecessary. There is a split here in intent & type of question.
+    question_information    = 205 # perhaps a gneral between fact, exp, & pref.
+    question_fact           = 206
+    question_experience     = 207
+    question_preference     = 208
+    question_desire         = 209
+    question_plan           = 210
+
+    greeting                = 301
+    farewell                = 302
+
+    #incomplete_units       = 6400 # unnecessary for text only
+
+    # agreeance
+    agreement               = 401 # perhaps agreeance be a range?
+    disagreement            = 402
+
+    backchannels            = 500 # probably unncesarry Listening Oriented.
+    acknowledgment          = 501
+    #appreciations     = 6 # opinion polarity on chatbot's self or subject of
+
+    thanks                  = 701
+    apology                 = 702
+
+    silence                 = 900
+    other                   = 000
 
 class Utterance:
     """Defines an individual utterance with the specific NLU information"""
@@ -153,10 +183,11 @@ class Persona:
             profile = dict()
 
             # create intricate parts if necessary
-            content = [
-                personality = self.personality.json_dump(),
-                preferences = {"preferences": topic_sentiment}
-            ]
+            name = {"name":self.name}
+            personality = self.personality.json_dump(),
+            preferences = {"preferences": topic_sentiment}
+
+            content = [name, personality, preferences]
 
             # Then save all into final profile
             profile["personality profile"] = {
@@ -232,21 +263,7 @@ def nlu_cli(default_mood):
         if first and dialogue_act not in da_names:
             first = False
             # Help, details what each dialogue act means.
-            print("Enter a dialogue act from list below:\n"
-                #+ "statement"
-                + "statement_description"
-                + "statement_opinion"
-                #+ "question"
-                + "question_yes_no"
-                + "question_wh"
-                + "question_declarative"
-                + "question_open"
-                + "backchannels"
-                + "incomplete_units"
-                + "agreements"
-                + "appreciations"
-                + "other"
-                )
+            print("Enter a dialogue act from list below:\n", da_names)
 
     text = ""
     while "[s]" not in text or "[\s]" not in text:
@@ -264,7 +281,7 @@ def nlu_cli(default_mood):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("personality_file", type=load_personality_file)
+    parser.add_argument("personality_profile", type=load_personality_file)
     parser.add_argument(["-s","--sentiment"],
                         default=5,
                         type=int,
@@ -278,7 +295,7 @@ def main():
 
     # Create both Personas for the user and the system
     user_persona = Persona("user", Personality(mood, 5))
-    simulated_persona = args.sentiment
+    simulated_persona = args.personality_file
 
     # initiate conversation
     conversation_history = Conversation_History([user, simulation])
