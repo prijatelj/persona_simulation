@@ -17,8 +17,8 @@ TODO: Switch from Python to C++ or Cython or Java.
 """
 
 import argparse
-from src.persona import DialogueAct, Utterance, load_personality_profile, \
-    Persona, Personality, ConversationHistory
+from src.persona import DialogueAct, Utterance, Persona, ConversationHistory
+import src.nlg as nlg
 
 def nlu_cli(default_mood):
     """ Command line interface for user to give all NLU data of utterance. """
@@ -67,7 +67,7 @@ def nlu_cli(default_mood):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("personality_profile", type=load_personality_profile)
+    parser.add_argument("personality_profile", type=Persona)
     parser.add_argument(
         ["-s", "--sentiment"],
         default=5,
@@ -86,7 +86,7 @@ def main():
     mood = args.mood
 
     # Create both Personas for the user and the system
-    user_persona = Persona("user", Personality(mood, 5))
+    user_persona = Persona("user", mood, 5)
     simulated_persona = args.personality_profile
 
     # initiate conversation
@@ -103,17 +103,17 @@ def main():
         conversation_history.add_utterance(utterance)
 
         # update user persona
-        if user_persona.personality.sentiment != mood:
-            user_persona.personality.set_sentiment(mood)
-        # inference on aggressiveness if necessary for predictions
+        if user_persona.personality.mood != mood:
+            user_persona.personality.set_mood(mood)
 
-        # TODO update simulated persona(s)
+        # output NLU_CLI data:
 
-        # Simulated Personality must determine how to respond and what to say
-        # This is mostly outside of NLG, although the what to say part somewhat
-        # overlaps with NLG task of content determination.
+        # output conversation_history updated
 
-        # call NLG module
+        # output user_persona.mood updated
+
+        if response_metadata.dialogue_act == DialogueAct.farewell:
+            ongoing_conversation = False
 
 if __name__ == "__main__":
     main()
