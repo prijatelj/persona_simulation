@@ -191,7 +191,13 @@ class Persona(object):
                 key:value for d in content for key, value in d.items()
             }
 
-            json.dump(profile, json_output, indent=4, sort_keys=True)
+            json.dump(
+                profile,
+                json_output,
+                ensure_ascii=False,
+                indent=4,
+                sort_keys=True
+            )
 
 class ConversationHistory(object):
     """
