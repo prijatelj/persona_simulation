@@ -16,64 +16,60 @@ TODO: Switch from Python to C++ or Cython or Java.
 :author: Derek S. Prijatelj
 """
 
-import argparse
 from enum import Enum
 import json
+import argparse
 
-class Dialogue_Act(Enum):
+class DialogueAct(Enum):
     """
-    Customized dialogue acts. Inspired by the dialogue act tag sets by
-    Shirberg et. al 1998, and Megura et. al 2010.
+    Customized dialogue acts: an abstraction of the intent of an utterance.
+    Inspired by the dialogue act tag sets by Shirberg et. al 1998, and
+    Megura et. al 2010.
     """
-    #statement              = 100
-    statement_fact          = 101
+    statement_information   = 101
     statement_experience    = 102
     statement_preference    = 103
-    statement_opinion       = 104
+    statement_opinion       = 104 # May overlap with preference.
     statement_desire        = 105
     statement_plan          = 106
 
-    #question               = 200
-    #question_yes_no         = 201
-    #question_declarative    = 202 # y/n question. a declaration in form of a q
-    #question_wh             = 203
-    #question_open           = 204
-
-    # May be unnecessary. There is a split here in intent & type of question.
-    question_information    = 205 # perhaps a gneral between fact, exp, & pref.
-    question_fact           = 206
-    question_experience     = 207
-    question_preference     = 208
-    question_desire         = 209
-    question_plan           = 210
+    question_information    = 201 # perhaps a gneral between fact, exp, & pref.
+    question_experience     = 202
+    question_preference     = 203
+    question_opinion        = 204
+    question_desire         = 205
+    question_plan           = 206
 
     greeting                = 301
     farewell                = 302
 
-    #incomplete_units       = 6400 # unnecessary for text only
+    backchannel             = 500 # Listening Oriented. Perhaps unnecessary?
+    request_confirmation    = 501
+    request_clarification   = 502
+    repeat                  = 503
+    paraphrase              = 504
+    sympathetic             = 505
+    unsympathetic           = 506
 
-    # agreeance
-    agreement               = 401 # perhaps agreeance be a range?
-    disagreement            = 402
+    thanks                  = 601
+    apology                 = 602
+    confirm                 = 603
+    disconfirm              = 604
+    agreement               = 601 # perhaps agreeance be a range?
+    disagreement            = 602
 
-    backchannels            = 500 # probably unncesarry Listening Oriented.
-    acknowledgment          = 501
-    #appreciations     = 6 # opinion polarity on chatbot's self or subject of
+    silence                 = 700
 
-    thanks                  = 701
-    apology                 = 702
-
-    silence                 = 900
     other                   = 000
 
-class Utterance:
+class Utterance(object):
     """Defines an individual utterance with the specific NLU information"""
     def __init__(self, text, topic, sentiment, dialogue_act):
         assert isinstance(text, str)
-        assert "[s]" in text and "[\s]" in text # Subject Tags, rest = prediacte
+        assert "[s]" in text and "[\\s]" in text #Subject Tags, rest = prediacte
         assert isinstance(topic, str)
-        assert isinstance(sentiment, int) && sentiment >= 1 and sentiment <= 10
-        assert isinstance(dialogue_act, Dialogue_Act)
+        assert isinstance(sentiment, int) and sentiment >= 1 and sentiment <= 10
+        assert isinstance(dialogue_act, DialogueAct)
 
         self._text = text
         self._topic = topic
@@ -82,59 +78,65 @@ class Utterance:
 
     @property
     def text(self):
+        """The string representation of the utterance's text"""
         return self._text.copy()
 
     @property
     def topic(self):
+        """The conversational topic of the utterance"""
         return self._topic.copy()
 
     @property
     def sentiment(self):
+        """The sentiment of the utterance"""
         return self._sentiment.copy()
 
     @property
     def dialogue_act(self):
+        """The dialogue act to depict the intent of the utterance"""
         return self._dialogue_act.copy()
 
-class Personality:
-    """ The Personality of a speaker. Polar sentiment. """
-    def __init__(self, sentiment, attitude):
-        assert sentiment in [1,2,3,4,5,6,7,8,9,10]
-        assert attitude in [1,2,3,4,5,6,7,8,9,10]
-        self._sentiment = sentiment
-        self._attitude = attitude
+class Personality(object):
+    """ The Personality of a speaker. Polar mood."""
+    def __init__(self, mood, aggressiveness):
+        assert mood in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        assert aggressiveness in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        self._mood = mood
+        self._aggressiveness = aggressiveness
 
     @property
-    def sentiment(self):
-        return self._sentiment
+    def mood(self):
+        """The mood the Personality which is polar negative/positive"""
+        return self._mood
 
     @property
-    def attitude(self):
-        return self._attitude
+    def aggressiveness(self):
+        """"The aggressiveness in pursueing the Personality's goals."""
+        return self._aggressiveness
 
-    def set_sentiment(self, sentiment):
-        self._sentiment = sentiment
+    def set_mood(self, mood):
+        self._mood = mood
 
-    def set_attitude(selt, attitude):
-        self._attitude = attitude
+    def set_aggressiveness(self, aggressiveness):
+        self._aggressiveness = aggressiveness
 
-    def json_dumps(self):
+    def get_dict(self):
         """
-        Returns json string of Personality for easy saving and addition to to
-        Personality Profile.
+        Returns dict of Personality for easy saving and addition to Personality
+        Profile.
         """
         return {"personality":
-                    {"sentiment" : self._sentiment,
-                     "attitude": self._attitude
+                    {"mood" : self._mood,
+                     "aggressiveness": self._aggressiveness
                     }
                }
 
-class Persona:
+class Persona(object):
     """ Defines a Persona of a participant in the conversation. """
     # TODO add history of Personality dict of {turn count, Personality}
-    #   However, this only works if able to be matched to correct conversation
-    #   history.
-    def __init__(self, name, personality, topic_sentiment=none):
+    # However, this only works if able to be matched to correct conversation
+    # history.
+    def __init__(self, name, personality, topic_sentiment=None):
         assert isinstance(name, str)
         assert isinstance(personality, Personality)
         assert isinstance(topic_sentiment, dict) or topic_sentiment is None
@@ -148,14 +150,6 @@ class Persona:
         self._topic_sentiment = topic_sentiment
 
     @property
-    def sentiment(self):
-        return self._sentiment
-
-    @property
-    def attitude(self):
-        return self._attitude
-
-    @property
     def name(self):
         return self._name
 
@@ -167,6 +161,7 @@ class Persona:
     def topic_sentiment(self):
         return self._topic_sentiment
 
+    # set functions for tracing errors
     def set_name(self, name):
         self._name = name
 
@@ -176,7 +171,7 @@ class Persona:
     def set_topic(self, topic, sentiment):
         self._topic_sentiment[topic] = sentiment
 
-    def store_personality_profile(self, path_output_json):
+    def save_personality_profile(self, path_output_json):
         """ store personality profile (prototype's persona) into json """
         with open(path_output_json, encoding='utf-8') as json_output:
             # create dictionary structure of Personality Profile first:
@@ -184,8 +179,11 @@ class Persona:
 
             # create intricate parts if necessary
             name = {"name":self.name}
-            personality = self.personality.json_dump(),
-            preferences = {"preferences": topic_sentiment}
+            personality = self.personality.get_dict()
+            # TODO add philosophy part
+            # TODO add explicit preferences
+
+            preferences = {"preferences": self.topic_sentiment}
 
             content = [name, personality, preferences]
 
@@ -194,12 +192,9 @@ class Persona:
                 key:value for d in content for key, value in d.items()
             }
 
-            json_data = json.dump(profile,
-                                  json_output,
-                                  indent=4,
-                                  sort_keys=True)
+            json.dump(profile, json_output, indent=4, sort_keys=True)
 
-class Conversation_History:
+class ConversationHistory(object):
     """
     Contains the conversation history with its NLU information.
 
@@ -242,9 +237,11 @@ def load_personality_profile(path_to_json):
 def nlu_cli(default_mood):
     """ Command line interface for user to give all NLU data of utterance. """
     mood = -1
-    while mood not in [1,2,3,4,5,6,7,8,9,10]:
-        mood = input("Enter your current mood on a scale of 1 to 10 where "
-            + "1 is negative, 5 is neutral, and 10 is positive.")
+    while mood not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+        mood = input(
+            "Enter your current mood on a scale of 1 to 10 where "
+            + "1 is negative, 5 is neutral, and 10 is positive."
+        )
         if mood == "":
             mood = default_mood
         else:
@@ -255,7 +252,7 @@ def nlu_cli(default_mood):
     #loop until they select correct dialogue act, show help after first fail
     dialogue_act = ""
     first = True
-    da_names = [da.name for da in Dialogue_Act]
+    da_names = [da.name for da in DialogueAct]
     while dialogue_act not in da_names:
         dialogue_act = input("Enter dialogue Act").strip().lower()
 
@@ -266,41 +263,53 @@ def nlu_cli(default_mood):
             print("Enter a dialogue act from list below:\n", da_names)
 
     text = ""
-    while "[s]" not in text or "[\s]" not in text:
-        text = input("Enter utterance text with [s] and [\s] tags around "
-        + "the subject:").strip()
+    while "[s]" not in text or "[\\s]" not in text:
+        text = input(
+            "Enter utterance text with [s] and [\\s] tags around the subject:"
+        ).strip()
 
     sentiment = -1
-    while sentiment not in [1,2,3,4,5,6,7,8,9,10]:
-        sentiment = int(input("Enter utterance sentiment 1 to 10. "
-            + "1 negative, 5 neutral, and 10 positive"))
+    while sentiment not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+        sentiment = int(input(
+            "Enter utterance sentiment 1 to 10. "
+            + "1 negative, 5 neutral, and 10 positive"
+        ))
 
     # Make Utterance from input
     #return utterance and mood
     return Utterance(text, topic, sentiment, dialogue_act), mood
 
-def main():
+def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("personality_profile", type=load_personality_file)
-    parser.add_argument(["-s","--sentiment"],
-                        default=5,
-                        type=int,
-                        choices=[1,2,3,4,5,6,7,8,9,10],
-                        help="The general mood of the user based on a scale of "
-                            + "polar sentiment where 1 is negative and 10 is "
-                            + "postive (5 is neutral).",
-                        metavar="user sentiment")
-    args = parser.parse_args()
+    parser.add_argument("personality_profile", type=load_personality_profile)
+    parser.add_argument(
+        ["-s", "--sentiment"],
+        default=5,
+        type=int,
+        choices=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        help="The general mood of the user based on a scale of "
+            + "polar sentiment where 1 is negative and 10 is "
+            + "postive (5 is neutral).",
+        metavar="user sentiment"
+    )
+    return parser.parse_args()
+
+def main():
+    """Simple implementation of nlu_cli."""
+    args = parse_args()
     mood = args.mood
 
     # Create both Personas for the user and the system
     user_persona = Persona("user", Personality(mood, 5))
-    simulated_persona = args.personality_file
+    simulated_persona = args.personality_profile
 
     # initiate conversation
-    conversation_history = Conversation_History([user, simulation])
+    conversation_history = Conversation_History(
+        [user_persona, simulated_persona]
+    )
+
     ongoing_conversation = True
-    while(ongoing_conversation)
+    while ongoing_conversation:
         # Query user for utterance
         utterance, mood = nlu_cli(mood)
 
@@ -310,7 +319,7 @@ def main():
         # update user persona
         if user_persona.personality.sentiment != mood:
             user_persona.personality.set_sentiment(mood)
-        # inference on attitude if necessary for predictions
+        # inference on aggressiveness if necessary for predictions
 
         # TODO update simulated persona(s)
 
