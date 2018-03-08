@@ -135,7 +135,7 @@ class Persona(object):
     """ Defines a Persona of a participant in the conversation. """
     # TODO add history of Personality dict of {turn count, Personality}
     # However, this only works if able to be matched to correct conversation
-    # history.
+    # history. This will become the PersonalityProfile class in future versions.
     def __init__(self, name, personality, topic_sentiment=None):
         assert isinstance(name, str)
         assert isinstance(personality, Personality)
@@ -173,7 +173,7 @@ class Persona(object):
 
     def save_personality_profile(self, path_output_json):
         """ store personality profile (prototype's persona) into json """
-        with open(path_output_json, encoding='utf-8') as json_output:
+        with open(path_output_json, 'w', encoding='utf-8') as json_output:
             # create dictionary structure of Personality Profile first:
             profile = dict()
 
@@ -181,9 +181,8 @@ class Persona(object):
             name = {"name":self.name}
             personality = self.personality.get_dict()
             # TODO add philosophy part
-            # TODO add explicit preferences
-
             preferences = {"preferences": self.topic_sentiment}
+            # TODO add explicit preferences
 
             content = [name, personality, preferences]
 
