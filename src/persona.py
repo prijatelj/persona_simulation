@@ -81,6 +81,35 @@ class Utterance(object):
         """The dialogue act to depict the intent of the utterance"""
         return self._dialogue_act.copy()
 
+class ConversationHistory(object):
+    """
+    Contains the conversation history with its NLU information.
+
+    :param utterances: List of utterance objects detailing the conversation
+        history.
+    :param participants: dict of participant id to persona information.
+    """
+    def __init__(self, participants, utterances=None):
+        assert isinstance(utterances, list) \
+            and isinstance(utterances[1], Utterance)
+        self._utterances = utterances
+        self._participants = participants
+
+    @property
+    def utterances(self):
+        return self._utterances
+
+    @property
+    def participants(self):
+        return self._participants
+
+    def add_utterance(self, utterance):
+        assert isinstance(utterance, Utterance)
+        self._utterances.append(utterance)
+
+    def add_participant(self, participant):
+        self._participants.append(participant)
+
 class Personality(object):
     """ The Personality of a speaker. Polar mood."""
     def __init__(self, mood, aggressiveness):
@@ -115,16 +144,35 @@ class Personality(object):
                      "aggressiveness": self._aggressiveness
                     }
                }
+
 class Persona(object):
     """ Defines a Persona of a participant in the conversation. """
     # TODO add history of Personality dict of {turn count, Personality}
     # However, this only works if able to be matched to correct conversation
     # history. This will become the PersonalityProfile class in future versions.
-    def __init__(self, name, personality, topic_sentiment=None):
+    def __init__(self, *args):
+        if len(args) == 1:
+            if isinstance(args[0], dict):
+                name, personality, topic_sentiment = self.extract_profile_dict(
+                    args[0]
+                )
+            elif isinstance(args[0], str):
+                name, personality, topic_sentiment = \
+                    self.load_personality_profile(
+                        args[0]
+                    )
+        elif len(args) >= 2 and len(args) <= 3:
+            name = args[0]
+            personality = args[1]
+            if len(args) == 3:
+                topic_sentiment = args[2]
+            else:
+                topic_sentiment = None
+
         assert isinstance(name, str)
         assert isinstance(personality, Personality)
         assert isinstance(topic_sentiment, dict) or topic_sentiment is None
-        if topic_sentiment is not None and topic_sentiment:
+        if topic_sentiment:
             # values ints [1,10]
             assert isinstance(list(topic_sentiment.values())[0], int)
 
@@ -182,42 +230,19 @@ class Persona(object):
                 indent=4,
                 sort_keys=True
             )
-class ConversationHistory(object):
-    """
-    Contains the conversation history with its NLU information.
 
-    :param utterances: List of utterance objects detailing the conversation
-        history.
-    :param participants: dict of participant id to persona information.
-    """
-    def __init__(self, participants, utterances=None):
-        assert isinstance(utterances, list) \
-            and isinstance(utterances[1], Utterance)
-        self._utterances = utterances
-        self._participants = participants
+    def extract_profile_dict(self, profile_dict):
+        name = profile_dict["personality_profile"]["name"]
+        personality = Personality(
+            profile_dict["personality_profile"]["personality"]["mood"],
+            profile_dict["personality_profile"]["personality"]["aggressiveness"]
+        )
+        topic_sentiment = profile_dict["personality profile"]["preferences"]
 
-    @property
-    def utterances(self):
-        return self._utterances
+        return name, personality, topic_sentiment
 
-    @property
-    def participants(self):
-        return self._participants
-
-    def add_utterance(self, utterance):
-        assert isinstance(utterance, Utterance)
-        self._utterances.append(utterance)
-
-    def add_participant(self, participant):
-        self._participants.append(participant)
-
-def load_personality_profile(path_to_json):
-    """ given a file path, loads the personality profile from json. """
-    # TODO Implement load_personality_profile from json
-    with open(path_to_json, encoding='utf-8') as json_personality:
-        profile = json.load(json_personality)
-
-        # Construct Personality Profile object from json decoded data
-
-
-    return
+    def load_personality_profile(self, path_to_json):
+        """ given a file path, loads the personality profile from json. """
+        with open(path_to_json, encoding='utf-8') as json_personality:
+            profile_dict = json.load(json_personality)
+            return self.extract_profile_dict(profile_dict)
