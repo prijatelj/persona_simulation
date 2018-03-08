@@ -1,6 +1,8 @@
 """
 Persona contains all classes and functions related to creating and using a
 persona in conversation.
+
+:author: Derek S. Prijatelj
 """
 from enum import Enum
 import json
