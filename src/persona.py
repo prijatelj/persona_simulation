@@ -27,7 +27,7 @@ class DialogueAct(Enum):
     question_desire         = 205
     question_plan           = 206
 
-    greeting                = 301
+    greeting                = 301 # greeting only, nothing else, no How are you?
     farewell                = 302
 
     backchannel             = 500 # Listening Oriented. Perhaps unnecessary?
@@ -51,16 +51,19 @@ class DialogueAct(Enum):
 
 class Utterance(object):
     """Defines an individual utterance with the specific NLU information"""
-    def __init__(self, text, topic, sentiment, dialogue_act):
+    def __init__(self, text, topic, sentiment, aggressiveness, dialogue_act):
         assert isinstance(text, str)
         assert "[s]" in text and "[/s]" in text #Subject Tags, rest = prediacte
         assert isinstance(topic, str)
         assert isinstance(sentiment, int) and sentiment >= 1 and sentiment <= 10
+        assert isinstance(aggressiveness, int) and aggressiveness >= 1 \
+            and aggressiveness <= 10
         assert isinstance(dialogue_act, DialogueAct)
 
         self._text = text
         self._topic = topic
         self._sentiment = sentiment
+        self._aggressiveness = aggressiveness
         self._dialogue_act = dialogue_act
 
     @property
@@ -78,6 +81,12 @@ class Utterance(object):
         """The sentiment of the utterance"""
         return self._sentiment
 
+    # TODO perhaps change aggressiveness to assertiveness
+    @property
+    def aggressiveness(self):
+        """The aggressiveness of the utterance"""
+        return self._aggressiveness
+
     @property
     def dialogue_act(self):
         """The dialogue act to depict the intent of the utterance"""
@@ -88,6 +97,7 @@ class Utterance(object):
             "Topic: ", self.topic, "\n",
             "Dialogue Act: ", self.dialogue_act, "\n",
             "Sentiment: ", self.sentiment, "\n",
+            "Aggressiveness: ", self.aggressiveness, "\n",
             "Text: ", self.text, "\n"
         )
 
