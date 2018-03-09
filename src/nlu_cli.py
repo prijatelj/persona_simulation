@@ -18,7 +18,6 @@ TODO: Switch from Python to C++ or Cython or Java.
 
 import argparse
 from src.persona import DialogueAct, Utterance, Persona, ConversationHistory
-import src.nlg as nlg
 
 def nlu_cli(default_mood):
     """ Command line interface for user to give all NLU data of utterance. """
@@ -26,7 +25,7 @@ def nlu_cli(default_mood):
     while mood not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
         mood = input(
             "Enter your current mood on a scale of 1 to 10 where "
-            + "1 is negative, 5 is neutral, and 10 is positive."
+            + "1 is negative, 5 is neutral, and 10 is positive: "
         )
         if mood == "":
             mood = default_mood
@@ -40,7 +39,7 @@ def nlu_cli(default_mood):
     first = True
     da_names = [da.name for da in DialogueAct]
     while dialogue_act not in da_names:
-        dialogue_act = input("Enter dialogue Act").strip().lower()
+        dialogue_act = input("Enter dialogue Act: ").strip().lower()
 
         # TODO fix help print out descriptions
         if first and dialogue_act not in da_names:
@@ -49,35 +48,43 @@ def nlu_cli(default_mood):
             print("Enter a dialogue act from list below:\n", da_names)
 
     text = ""
-    while "[s]" not in text or "[\\s]" not in text:
+    while "[s]" not in text or "[/s]" not in text:
         text = input(
-            "Enter utterance text with [s] and [\\s] tags around the subject:"
+            "Enter utterance text with [s] and [/s] tags around the subject: "
         ).strip()
 
     sentiment = -1
     while sentiment not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
         sentiment = int(input(
             "Enter utterance sentiment 1 to 10. "
-            + "1 negative, 5 neutral, and 10 positive"
+            + "1 negative, 5 neutral, and 10 positive: "
         ))
 
     # Make Utterance from input
     #return utterance and mood
-    return Utterance(text, topic, sentiment, dialogue_act), mood
+    return Utterance(text, topic, sentiment, DialogueAct[dialogue_act]), mood
+
+def construct_persona(x):
+    return Persona(x)
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("personality_profile", type=Persona)
+    parser.add_argument("personality_profile",
+        type=construct_persona,
+        help="Enter the file path to the personality profile"
+    )
+    #"""
     parser.add_argument(
-        ["-s", "--sentiment"],
+        "-s", "--mood",
         default=5,
         type=int,
         choices=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         help="The general mood of the user based on a scale of "
-            + "polar sentiment where 1 is negative and 10 is "
+            + "polar mood where 1 is negative and 10 is "
             + "postive (5 is neutral).",
-        metavar="user sentiment"
+        metavar="user mood"
     )
+    #"""
     return parser.parse_args()
 
 def main():
@@ -88,6 +95,7 @@ def main():
     # Create both Personas for the user and the system
     user_persona = Persona("user", mood, 5)
     simulated_persona = args.personality_profile
+    #simulated_persona = Persona(args.personality_profile)
 
     # initiate conversation
     conversation_history = ConversationHistory(
@@ -106,13 +114,17 @@ def main():
         if user_persona.personality.mood != mood:
             user_persona.personality.set_mood(mood)
 
-        # output NLU_CLI data:
+        print("output NLU_CLI data:\n")
+        utterance.print_out()
+        print("\n", mood, "\n")
 
-        # output conversation_history updated
+        print("output conversation_history updated\n")
+        conversation_history.print_out()
 
-        # output user_persona.mood updated
+        print("output user_persona.mood updated\n")
+        user_persona.print_out()
 
-        if response_metadata.dialogue_act == DialogueAct.farewell:
+        if utterance.dialogue_act == DialogueAct.farewell:
             ongoing_conversation = False
 
 if __name__ == "__main__":

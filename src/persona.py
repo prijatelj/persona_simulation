@@ -53,7 +53,7 @@ class Utterance(object):
     """Defines an individual utterance with the specific NLU information"""
     def __init__(self, text, topic, sentiment, dialogue_act):
         assert isinstance(text, str)
-        assert "[s]" in text and "[\\s]" in text #Subject Tags, rest = prediacte
+        assert "[s]" in text and "[/s]" in text #Subject Tags, rest = prediacte
         assert isinstance(topic, str)
         assert isinstance(sentiment, int) and sentiment >= 1 and sentiment <= 10
         assert isinstance(dialogue_act, DialogueAct)
@@ -66,22 +66,30 @@ class Utterance(object):
     @property
     def text(self):
         """The string representation of the utterance's text"""
-        return self._text.copy()
+        return self._text
 
     @property
     def topic(self):
         """The conversational topic of the utterance"""
-        return self._topic.copy()
+        return self._topic
 
     @property
     def sentiment(self):
         """The sentiment of the utterance"""
-        return self._sentiment.copy()
+        return self._sentiment
 
     @property
     def dialogue_act(self):
         """The dialogue act to depict the intent of the utterance"""
-        return self._dialogue_act.copy()
+        return self._dialogue_act
+
+    def print_out(self):
+        print(
+            "Topic: ", self.topic, "\n",
+            "Dialogue Act: ", self.dialogue_act, "\n",
+            "Sentiment: ", self.sentiment, "\n",
+            "Text: ", self.text, "\n"
+        )
 
 class ConversationHistory(object):
     """
@@ -91,9 +99,10 @@ class ConversationHistory(object):
         history.
     :param participants: dict of participant id to persona information.
     """
-    def __init__(self, participants, utterances=None):
+    def __init__(self, participants, utterances=[]):
         assert isinstance(utterances, list) \
-            and isinstance(utterances[1], Utterance)
+            and (len(utterances) == 0
+            or isinstance(utterances[0], Utterance))
         self._utterances = utterances
         self._participants = participants
 
@@ -111,6 +120,15 @@ class ConversationHistory(object):
 
     def add_participant(self, participant):
         self._participants.append(participant)
+
+    def print_out(self):
+        print("Utterances:\n")
+        for u in self.utterances:
+            u.print_out()
+
+        print("\nParticipants:\n")
+        for p in self.participants:
+            print(p.print_out())
 
 class Personality(object):
     """ The Personality of a speaker. Polar mood."""
@@ -147,11 +165,20 @@ class Personality(object):
                     }
                }
 
+    def print_out(self):
+        print(
+            "Personality:\n",
+            "mood: ", self.mood, "\n",
+            "aggressiveness: ", self.aggressiveness, "\n"
+        )
+
+
 class Persona(object):
     """ Defines a Persona of a participant in the conversation. """
     # TODO add history of Personality dict of {turn count, Personality}
     # However, this only works if able to be matched to correct conversation
     # history. This will become the PersonalityProfile class in future versions.
+    # TODO add a list of conversation histories to this Persona. like memory
     def __init__(self, *args):
         if len(args) == 1:
             if isinstance(args[0], dict):
@@ -160,14 +187,12 @@ class Persona(object):
                 )
             elif isinstance(args[0], str):
                 name, personality, topic_sentiment = \
-                    self.load_personality_profile(
-                        args[0]
-                    )
-        elif len(args) >= 2 and len(args) <= 3:
+                    self.load_personality_profile(args[0])
+        elif len(args) >= 2 and len(args) <= 4:
             name = args[0]
-            personality = args[1]
-            if len(args) == 3:
-                topic_sentiment = args[2]
+            personality = Personality(args[1], args[2])
+            if len(args) == 4:
+                topic_sentiment = args[3]
             else:
                 topic_sentiment = None
 
@@ -234,10 +259,10 @@ class Persona(object):
             )
 
     def extract_profile_dict(self, profile_dict):
-        name = profile_dict["personality_profile"]["name"]
+        name = profile_dict["personality profile"]["name"]
         personality = Personality(
-            profile_dict["personality_profile"]["personality"]["mood"],
-            profile_dict["personality_profile"]["personality"]["aggressiveness"]
+            profile_dict["personality profile"]["personality"]["mood"],
+            profile_dict["personality profile"]["personality"]["aggressiveness"]
         )
         topic_sentiment = profile_dict["personality profile"]["preferences"]
 
@@ -248,3 +273,13 @@ class Persona(object):
         with open(path_to_json, encoding='utf-8') as json_personality:
             profile_dict = json.load(json_personality)
             return self.extract_profile_dict(profile_dict)
+
+    def print_out(self):
+        print("Name: ", self.name, "\n")
+        self.personality.print_out()
+        print("topic sentiment:\n")
+        if self.topic_sentiment:
+            for ts in self.topic_sentiment.items():
+                print(ts, "\n")
+        else:
+            print(None)
