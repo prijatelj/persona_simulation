@@ -5,7 +5,7 @@ Main interface to test/run the simulation.
 """
 
 from src.persona import Persona, ConversationHistory, DialogueAct
-import src.tactician as tactician
+import src.intelligent_agent as ia
 import src.nlg as nlg
 
 def main():
@@ -39,7 +39,7 @@ def main():
         # Simulated Personality must determine how to respond and what to say
         # This is mostly outside of NLG, although the what to say part somewhat
         # overlaps with NLG task of content determination.
-        response_metadata = tactician.decide_response(
+        response_metadata = ia.decide_response(
             simulated_persona,
             user_persona,
             conversation_history
