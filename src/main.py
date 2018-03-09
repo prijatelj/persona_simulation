@@ -5,6 +5,8 @@ Main interface to test/run the simulation.
 """
 
 from src.persona import Persona, ConversationHistory, DialogueAct
+import src.tactician as tactician
+import src.nlg as nlg
 
 def main():
     args = parse_args()
