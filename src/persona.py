@@ -15,6 +15,7 @@ class DialogueAct(Enum):
     Inspired by the dialogue act tag sets by Shirberg et. al 1998, and
     Megura et. al 2010.
     """
+    statement               = 100 # dummy enum, may serve as other/general stmnt
     statement_information   = 101
     statement_experience    = 102
     statement_preference    = 103
@@ -22,6 +23,8 @@ class DialogueAct(Enum):
     statement_desire        = 105
     statement_plan          = 106
 
+    #TODO may want y/n, declarative, wh, etc... question types somehow in NLU...
+    question                = 200 # dummy enum, may serve as other/general quest
     question_information    = 201 # perhaps a gneral between fact, exp, & pref.
     question_experience     = 202
     question_preference     = 203
@@ -53,6 +56,7 @@ class DialogueAct(Enum):
 
 class Utterance(object):
     """Defines an individual utterance with the specific NLU information"""
+    #TODO add speaker of utterance for identification!
     def __init__(self, text, topic, sentiment, aggressiveness, dialogue_act):
         assert isinstance(text, str)
         assert "[s]" in text and "[/s]" in text #Subject Tags, rest = prediacte
@@ -218,6 +222,9 @@ class Persona(object):
     # are only one conversation history per pair of participants, then time
     # ordering is unnecessary, simply user_id to list of all conversation
     # histories they occur in.
+
+    #TODO does a personality profile require Desires for detailing explicit goals
+    # along with the existing Personality, Philosophy, and Preferences?
 
     def __init__(self, *args):
         if len(args) == 1:
