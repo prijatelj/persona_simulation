@@ -4,6 +4,8 @@ persona in conversation.
 
 :author: Derek S. Prijatelj
 """
+from collections import OrderedDict
+from datetime import datetime
 from enum import Enum
 import json
 
@@ -60,37 +62,37 @@ class Utterance(object):
             and aggressiveness <= 10
         assert isinstance(dialogue_act, DialogueAct)
 
-        self._text = text
-        self._topic = topic
-        self._sentiment = sentiment
-        self._aggressiveness = aggressiveness
-        self._dialogue_act = dialogue_act
+        self.__text = text.strip()
+        self.__topic = topic.lower().strip()
+        self.__sentiment = sentiment
+        self.__aggressiveness = aggressiveness
+        self.__dialogue_act = dialogue_act
 
     @property
     def text(self):
         """The string representation of the utterance's text"""
-        return self._text
+        return self.__text
 
     @property
     def topic(self):
         """The conversational topic of the utterance"""
-        return self._topic
+        return self.__topic
 
     @property
     def sentiment(self):
         """The sentiment of the utterance"""
-        return self._sentiment
+        return self.__sentiment
 
     # TODO perhaps change aggressiveness to assertiveness
     @property
     def aggressiveness(self):
         """The aggressiveness of the utterance"""
-        return self._aggressiveness
+        return self.__aggressiveness
 
     @property
     def dialogue_act(self):
         """The dialogue act to depict the intent of the utterance"""
-        return self._dialogue_act
+        return self.__dialogue_act
 
     def print_out(self):
         print(
@@ -102,34 +104,55 @@ class Utterance(object):
         )
 
 class ConversationHistory(object):
-    """
-    Contains the conversation history with its NLU information.
+    """Contains the conversation history with its NLU information."""
+    def __init__(self, participants=[], utterances=OrderedDict()):
+        """
+        :param utterances: OrderedDict of datetime to Utterance objects
+            detailing the conversation history.
+        :param participants: list of personas participating in conversation
+        """
+        #TODO make participants dict of participant id's/hashes
+        assert isinstance(participants, list)
+        assert isinstance(utterances, OrderedDict) \
+            and (len(utterances.values()) == 0
+            or isinstance(utterances.values()[0], Utterance))
 
-    :param utterances: List of utterance objects detailing the conversation
-        history.
-    :param participants: dict of participant id to persona information.
-    """
-    def __init__(self, participants, utterances=[]):
-        assert isinstance(utterances, list) \
-            and (len(utterances) == 0
-            or isinstance(utterances[0], Utterance))
-        self._utterances = utterances
-        self._participants = participants
+        self.__utterances = utterances
+        self.__participants = participants
+
+        self.__topic_to_utterances = {}
+        for k,u in utterances.items():
+            self.__add_utterance_to_topic(u, k)
 
     @property
     def utterances(self):
-        return self._utterances
+        return self.__utterances
 
     @property
     def participants(self):
-        return self._participants
+        return self.__participants
 
-    def add_utterance(self, utterance):
+    @property
+    def topic_to_utterances(self):
+        return self.__topic_to_utterances.copy()
+
+    def add_utterance(self, utterance, date_time=None):
         assert isinstance(utterance, Utterance)
-        self._utterances.append(utterance)
+        self.__utterances.append(utterance)
+
+        if date_time is None:
+            date_time = datetime.now()
+        self.__add_utterance_to_topic(utterance.topic, date_time)
+
+    def __add_utterance_to_topic(self, utterance, date_time):
+        """Helper function to update topic_to_utterances dict"""
+        if utterance.topic in self.__topic_to_utterances.keys():
+            self.__topic_to_utterances[utterance.topic].append(date_time)
+        else:
+            self.__topic_to_utterances[utterance.topic] = [date_time]
 
     def add_participant(self, participant):
-        self._participants.append(participant)
+        self.__participants.append(participant)
 
     def print_out(self):
         print("Utterances:\n")
@@ -145,24 +168,24 @@ class Personality(object):
     def __init__(self, mood, aggressiveness):
         assert mood in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         assert aggressiveness in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        self._mood = mood
-        self._aggressiveness = aggressiveness
+        self.__mood = mood
+        self.__aggressiveness = aggressiveness
 
     @property
     def mood(self):
         """The mood the Personality which is polar negative/positive"""
-        return self._mood
+        return self.__mood
 
     @property
     def aggressiveness(self):
         """"The aggressiveness in pursueing the Personality's goals."""
-        return self._aggressiveness
+        return self.__aggressiveness
 
     def set_mood(self, mood):
-        self._mood = mood
+        self.__mood = mood
 
     def set_aggressiveness(self, aggressiveness):
-        self._aggressiveness = aggressiveness
+        self.__aggressiveness = aggressiveness
 
     def get_dict(self):
         """
@@ -170,8 +193,8 @@ class Personality(object):
         Profile.
         """
         return {"personality":
-                    {"mood" : self._mood,
-                     "aggressiveness": self._aggressiveness
+                    {"mood" : self.__mood,
+                     "aggressiveness": self.__aggressiveness
                     }
                }
 
@@ -220,32 +243,32 @@ class Persona(object):
             # values ints [1,10]
             assert isinstance(list(topic_sentiment.values())[0], int)
 
-        #self._id = name # maybe necessary later, not in prototype. Use names.
-        self._name = name
-        self._personality = personality
-        self._topic_sentiment = topic_sentiment
+        #self.__id = name # maybe necessary later, not in prototype. Use names.
+        self.__name = name
+        self.__personality = personality
+        self.__topic_sentiment = topic_sentiment
 
     @property
     def name(self):
-        return self._name
+        return self.__name
 
     @property
     def personality(self):
-        return self._personality
+        return self.__personality
 
     @property
     def topic_sentiment(self):
-        return self._topic_sentiment
+        return self.__topic_sentiment
 
     # set functions for tracing errors
     def set_name(self, name):
-        self._name = name
+        self.__name = name
 
     def set_personality(self, personality):
-        self._personality = personality
+        self.__personality = personality
 
     def set_topic(self, topic, sentiment):
-        self._topic_sentiment[topic] = sentiment
+        self.__topic_sentiment[topic] = sentiment
 
     def save_personality_profile(self, path_output_json):
         """ store personality profile (prototype's persona) into json """
