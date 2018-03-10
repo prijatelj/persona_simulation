@@ -48,7 +48,10 @@ def main():
         # call NLG module to generate actual text
         response_utterance = nlg.response(response_metadata)
 
-        print(response_utterance, "\n")
+        response_utterance.print_out()
+
+        # update conversation history
+        conversation_history.add_utterance(response_utterance)
 
         if response_metadata.dialogue_act == DialogueAct.farewell:
             ongoing_conversation = False
