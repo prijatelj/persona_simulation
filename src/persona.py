@@ -188,7 +188,14 @@ class Persona(object):
     # TODO add history of Personality dict of {turn count, Personality}
     # However, this only works if able to be matched to correct conversation
     # history. This will become the PersonalityProfile class in future versions.
-    # TODO add a list of conversation histories to this Persona. like memory
+
+    # TODO add a list of conversation histories to this Persona. like memory,
+    # this would be a dict of user_ids to conversation histories ordered by time
+    # The conversation histories would have to be external and global. If there
+    # are only one conversation history per pair of participants, then time
+    # ordering is unnecessary, simply user_id to list of all conversation
+    # histories they occur in.
+
     def __init__(self, *args):
         if len(args) == 1:
             if isinstance(args[0], dict):
