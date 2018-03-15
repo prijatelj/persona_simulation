@@ -32,27 +32,27 @@ class DialogueAct(Enum):
     question_desire         = 205
     question_plan           = 206
 
+    # greeting, farewell, and silence, are not necessarily responses...
+    response_action         = 300 # dummy enum, may need better name... misc.
     greeting                = 301 # greeting only, nothing else, no How are you?
     farewell                = 302
+    thanks                  = 303
+    apology                 = 304
+    confirm                 = 305
+    disconfirm              = 306
+    agreement               = 307 # perhaps agreeance be a range?
+    disagreement            = 308
+    silence                 = 309
 
-    backchannel             = 500 # Listening Oriented. Perhaps unnecessary?
-    request_confirmation    = 501
-    request_clarification   = 502
-    repeat                  = 503
-    paraphrase              = 504
-    sympathetic             = 505
-    unsympathetic           = 506
+    backchannel             = 400 # Listening Oriented. Perhaps unnecessary?
+    request_confirmation    = 401
+    request_clarification   = 402
+    repeat                  = 403
+    paraphrase              = 404
+    #sympathetic             = 405 # aggree/disagree w/ positive sentiment
+    #unsympathetic           = 406 # agree/disagree w/ negative sentiment
 
-    thanks                  = 601
-    apology                 = 602
-    confirm                 = 603
-    disconfirm              = 604
-    agreement               = 601 # perhaps agreeance be a range?
-    disagreement            = 602
-
-    silence                 = 700
-
-    other                   = 000
+    other                   = 000 # should record what user specifies as other.
 
 class Utterance(object):
     """Defines an individual utterance with the specific NLU information"""
