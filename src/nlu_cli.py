@@ -60,10 +60,10 @@ def nlu_cli(default_mood):
             + "1 negative, 5 neutral, and 10 positive: "
         ))
 
-    aggressiveness = -1
-    while aggressiveness not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-        aggressiveness = int(input(
-            "Enter utterance aggressiveness 1 to 10. "
+    assertiveness = -1
+    while assertiveness not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+        assertiveness = int(input(
+            "Enter utterance assertiveness 1 to 10. "
             + "1 passive/listening oriented, 5 neutral, and "
             + "10 assertive/leading conversation: "
         ))
@@ -71,7 +71,7 @@ def nlu_cli(default_mood):
     return Utterance(text,
             topic,
             sentiment,
-            aggressiveness,
+            assertiveness,
             DialogueAct[dialogue_act]
         ), mood
 

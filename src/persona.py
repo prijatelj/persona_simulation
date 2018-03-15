@@ -57,19 +57,19 @@ class DialogueAct(Enum):
 class Utterance(object):
     """Defines an individual utterance with the specific NLU information"""
     #TODO add speaker of utterance for identification!
-    def __init__(self, text, topic, sentiment, aggressiveness, dialogue_act):
+    def __init__(self, text, topic, sentiment, assertiveness, dialogue_act):
         assert isinstance(text, str)
         assert "[s]" in text and "[/s]" in text #Subject Tags, rest = prediacte
         assert isinstance(topic, str)
         assert isinstance(sentiment, int) and sentiment >= 1 and sentiment <= 10
-        assert isinstance(aggressiveness, int) and aggressiveness >= 1 \
-            and aggressiveness <= 10
+        assert isinstance(assertiveness, int) and assertiveness >= 1 \
+            and assertiveness <= 10
         assert isinstance(dialogue_act, DialogueAct)
 
         self.__text = text.strip()
         self.__topic = topic.lower().strip()
         self.__sentiment = sentiment
-        self.__aggressiveness = aggressiveness
+        self.__assertiveness = assertiveness
         self.__dialogue_act = dialogue_act
 
     @property
@@ -87,11 +87,11 @@ class Utterance(object):
         """The sentiment of the utterance"""
         return self.__sentiment
 
-    # TODO perhaps change aggressiveness to assertiveness
+    # TODO perhaps change assertiveness to assertiveness
     @property
-    def aggressiveness(self):
-        """The aggressiveness of the utterance"""
-        return self.__aggressiveness
+    def assertiveness(self):
+        """The assertiveness of the utterance"""
+        return self.__assertiveness
 
     @property
     def dialogue_act(self):
@@ -103,7 +103,7 @@ class Utterance(object):
             "Topic: ", self.topic, "\n",
             "Dialogue Act: ", self.dialogue_act, "\n",
             "Sentiment: ", self.sentiment, "\n",
-            "Aggressiveness: ", self.aggressiveness, "\n",
+            "Aggressiveness: ", self.assertiveness, "\n",
             "Text: ", self.text, "\n"
         )
 
@@ -169,11 +169,11 @@ class ConversationHistory(object):
 
 class Personality(object):
     """ The Personality of a speaker. Polar mood."""
-    def __init__(self, mood, aggressiveness):
+    def __init__(self, mood, assertiveness):
         assert mood in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        assert aggressiveness in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        assert assertiveness in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         self.__mood = mood
-        self.__aggressiveness = aggressiveness
+        self.__assertiveness = assertiveness
 
     @property
     def mood(self):
@@ -181,15 +181,15 @@ class Personality(object):
         return self.__mood
 
     @property
-    def aggressiveness(self):
-        """"The aggressiveness in pursueing the Personality's goals."""
-        return self.__aggressiveness
+    def assertiveness(self):
+        """"The assertiveness in pursueing the Personality's goals."""
+        return self.__assertiveness
 
     def set_mood(self, mood):
         self.__mood = mood
 
-    def set_aggressiveness(self, aggressiveness):
-        self.__aggressiveness = aggressiveness
+    def set_assertiveness(self, assertiveness):
+        self.__assertiveness = assertiveness
 
     def get_dict(self):
         """
@@ -198,7 +198,7 @@ class Personality(object):
         """
         return {"personality":
                     {"mood" : self.__mood,
-                     "aggressiveness": self.__aggressiveness
+                     "assertiveness": self.__assertiveness
                     }
                }
 
@@ -206,7 +206,7 @@ class Personality(object):
         print(
             "Personality:\n",
             "mood: ", self.mood, "\n",
-            "aggressiveness: ", self.aggressiveness, "\n"
+            "assertiveness: ", self.assertiveness, "\n"
         )
 
 
@@ -309,7 +309,7 @@ class Persona(object):
         name = profile_dict["personality profile"]["name"]
         personality = Personality(
             profile_dict["personality profile"]["personality"]["mood"],
-            profile_dict["personality profile"]["personality"]["aggressiveness"]
+            profile_dict["personality profile"]["personality"]["assertiveness"]
         )
         topic_sentiment = profile_dict["personality profile"]["preferences"]
 
