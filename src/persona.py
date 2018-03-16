@@ -134,7 +134,7 @@ class ConversationHistory(object):
 
     @property
     def participants(self):
-        return self.__participants
+        return self.__participants.copy()
 
     @property
     def topic_to_utterances(self):
