@@ -9,13 +9,17 @@ from src.persona import DialogueAct
 from src.nlg import generate_response
 
 _standard_topic = [
-    "user", "me", "myself", # user
-    "simulation", "chatbot", "you", "yourself", # simulation
+    "self_user",
+    "self_bot",
     "weather",
+    "news",
+    "politics",
+    "sports",
     "joke"
 ]
 
-def decide_response(simulation, user, conversation_history):
+#def decide_response(simulation, user, conversation_history):
+def decide_response(conversation_history, responder_id, persona_dict):
     """
     Main interface for intelligent agent to decide how to response. With the NLU
     information and the persona making this decision, generates the metadata of
@@ -35,11 +39,14 @@ def decide_response(simulation, user, conversation_history):
 
     Tell a joke.
     """
+    responder = persona_dict[responder_id]
+    participants = conversation_history.participants.remove(responder_id)
+    user = persona_dict[participants[0]]
 
     # determine state of conversation
 
     # Assess mood and magnitude of change to mood necessary
-    mood_magnitude = simulation.personality.mood - user.personality.mood
+    mood_magnitude = responder.personality.mood - user.personality.mood
 
     user_previous_utterance = conversation_history.utterances[-1]
 
@@ -51,6 +58,11 @@ def decide_response(simulation, user, conversation_history):
     if len(conversation_history.topic_to_utterance.keys()) == 0:
         # No topic discussed, query new topics.
         query()
+
+        # prev = greeting, then greeting, query, etc.
+        # prev = question, then answer
+        # statement then ... idk response? who are you?
+
     else:
         # topics have been discussed, and conversation ongoing???
         # TODO to determine if this conversation instance is new or ongoing,
@@ -87,6 +99,10 @@ def dialogue_act_is_question(da):
 def topic_is_self(topic):
     """ Check if the topic is about the simulation/chatbot itself. """
     return topic in ["you", "yourself"]
+
+def handle_standard_topic(conversation_history, responder, user, mood_magnitude):
+    """ Handles responding to standard topics, such as weather and news.  """
+    return
 
 # Tactics
 def query_topics(simulation, user, conversation_history, mood_magnitude):
