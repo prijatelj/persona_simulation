@@ -4,8 +4,8 @@ Main interface to test/run the simulation.
 :author: Derek S. Prijatelj
 """
 
-from src.persona import Persona, ConversationHistory, DialogueAct
-import src.intelligent_agent as ia
+from src.persona import Persona, ConversationHistory, DialogueAct, Utterance
+import src.intelligent_agent
 import src.nlg as nlg
 
 def main():
@@ -32,21 +32,22 @@ def main():
         # update user persona
         if user_persona.personality.mood != mood:
             user_persona.personality.set_mood(mood)
-        # inference on aggressiveness if necessary for predictions
+        # inference on assertiveness if necessary for predictions
 
         # TODO update simulated persona(s) for future versions
 
         # Simulated Personality must determine how to respond and what to say
         # This is mostly outside of NLG, although the what to say part somewhat
         # overlaps with NLG task of content determination.
-        response_metadata = ia.decide_response(
+        response_metadata = intelligent_agent.decide_response(
             simulated_persona,
             user_persona,
             conversation_history
         )
 
-        # call NLG module to generate actual text
-        response_utterance = nlg.response(response_metadata)
+        # call NLG module to generate actual text, if needed.
+        response_utterance = nlg.response(response_metadata) \
+            if response_metadata.text is None else response_metadata
 
         response_utterance.print_out()
 
@@ -55,7 +56,6 @@ def main():
 
         if response_metadata.dialogue_act == DialogueAct.farewell:
             ongoing_conversation = False
-
 
 if __name__ == "__main__":
     main()
