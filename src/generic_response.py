@@ -28,12 +28,7 @@ def greeting(persona, sentiment=None, formal=None):
         pos += ["Good Evening"]
         neutral_informal += ["Evening"]
 
-    if formal is None:
-        neutral = neutral_formal + neutral_informal
-    elif formal:
-        neutral = neutral_formal
-    elif not formal:
-        neutral = neutral_informal
+    neutral = formality_select(formal, neutral_informal, neutral_formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
@@ -59,15 +54,8 @@ def farewell(persona, sentiment=None, formal=None):
         pos_formal += ["Have a good evening"]
         pos_informal += ["Good night"]
 
-    if formal is None:
-        neutral = neutral_formal + neutral_informal
-        pos = pos_formal + pos_informal
-    elif formal:
-        neutral = neutral_formal
-        pos = pos_formal
-    elif not formal:
-        neutral = neutral_informal
-        pos = pos_formal
+    neutral = formality_select(formal, neutral_informal, neutral_formal)
+    pos = formality_select(formal, pos_informal, pos_formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
@@ -93,12 +81,7 @@ def confirm(persona, sentiment=None, formal=None):
     pos = ["Absolutely, yes", "Definitely, yes", "Definitely, yes"]
     neg = ["Unfortunately, yes"]
 
-    if formal is None:
-        neutral = neutral_formal + neutral_informal
-    elif formal:
-        neutral = neutral_formal
-    elif not formal:
-        neutral = neutral_informal
+    neutral = formality_select(formal, neutral_informal, neutral_formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
@@ -116,12 +99,7 @@ def thanks(persona, sentiment=None, formal=None)
     pos = ["Thank you very much"]
     neg = ["Thanks for nothing"]
 
-    if formal is None:
-        neutral = neutral_formal + neutral_informal
-    elif formal:
-        neutral = neutral_formal
-    elif not formal:
-        neutral = neutral_informal
+    neutral = formality_select(formal, neutral_informal, neutral_formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
@@ -132,12 +110,7 @@ def apology(persona, sentiment=None, formal=None)
     pos = ["Please forgive me"]
     neg = ["I beg your pardon", "Forgive me"]
 
-    if formal is None:
-        neutral = neutral_formal + neutral_informal
-    elif formal:
-        neutral = neutral_formal
-    elif not formal:
-        neutral = neutral_informal
+    neutral = formality_select(formal, neutral_informal, neutral_formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
@@ -172,10 +145,14 @@ def query(persona, sentiment=None, formal=None):
 
 """
 def question_information(persona, sentiment=None):
+
     return
 
 def question_experience(persona, sentiment=None):
-    return
+    neutral = ["Do you have a notable experience with that?"]
+    pos = ["Could you please share a notable experience with that?"]
+    neg = ["What kind of"]
+    return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def question_preference(persona, sentiment=None):
     return
@@ -189,11 +166,31 @@ def question_desire(persona, sentiment=None):
 def question_plan(persona, sentiment=None):
     return
 
+def insult():
+    return
+
+def compliment():
+    return
+
 def sentiment_select(persona, sentiment, neutral, pos=None, neg=None):
-    sentiment = sentiment if sentiment is None else persona.personality.mood
+    # TODO perhaps have persona/sentiment accept either a person obj, or int val
+    # use conditional statement to determine type and how to handle.
+    sentiment = sentiment if sentiment is not None else persona.personality.mood
     if neg is not None and sentiment < 4:
         return neg[randint(0, len(neg)]
     elif pos is not None and sentiment > 6:
         return pos[randint(0, len(pos))]
     else:
         return neutral[randint(0, len(neutral))]
+
+def formality_select(formality, informal, formal=None):
+    if formality is None:
+        return formal + informal
+    elif formality:
+        return formal
+    elif not formality:
+        return informal
+
+def negative_adjective(formal):
+    formal_adj = ["pathetic", "unintelligent"]
+    informal_adj = ["lame", "stupid", ""]
