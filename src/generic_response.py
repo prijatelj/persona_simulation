@@ -142,7 +142,7 @@ def apology(persona, sentiment=None, formal=None)
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def backchannel(persona, sentiment=None, formal=None)
-    neutral = ["Uh-huh", "Hmm", "Mm-hmm", "Okay"]
+    neutral = ["Uh-huh", "Hmm", "Mm-hmm", "Okay", "I see"]
     pos = ["Wow"]
 
     return sentiment_select(persona, sentiment, neutral, pos)
