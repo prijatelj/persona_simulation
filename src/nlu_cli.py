@@ -19,9 +19,9 @@ TODO: Switch from Python to C++ or Cython or Java.
 import argparse
 from src.persona import DialogueAct, Utterance, Persona, ConversationHistory
 
-def nlu_cli(default_mood):
+def nlu_cli(default_mood, user_id):
     """ Command line interface for user to give all NLU data of utterance. """
-    mood = -1
+    mood = -1 # TODO currently superfulous while loop given default mood.
     while mood not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
         mood = input(
             "Enter your current mood on a scale of 1 to 10 where "
@@ -31,6 +31,7 @@ def nlu_cli(default_mood):
             mood = default_mood
         else:
             mood = int(mood)
+        mood = default_mood if mood == "" else int(mood)
 
     topic = input("Enter Topic: ").strip().lower()
 
@@ -47,32 +48,36 @@ def nlu_cli(default_mood):
             # Help, details what each dialogue act means.
             print("Enter a dialogue act from list below:\n", da_names)
 
-    text = ""
-    while "[s]" not in text or "[/s]" not in text:
-        text = input(
-            "Enter utterance text with [s] and [/s] tags around the subject: "
-        ).strip()
+    #text = ""
+    #while "[s]" not in text or "[/s]" not in text:
+    text = input(
+        "Enter utterance text: "# with [s] and [/s] tags around the subject: "
+    ).strip()
 
     sentiment = -1
     while sentiment not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-        sentiment = int(input(
+        sentiment = input(
             "Enter utterance sentiment 1 to 10. "
             + "1 negative, 5 neutral, and 10 positive: "
-        ))
+        )
+        sentiment = -1 if sentiment == "" else int(sentiment)
 
     assertiveness = -1
     while assertiveness not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-        assertiveness = int(input(
+        assertiveness = input(
             "Enter utterance assertiveness 1 to 10. "
             + "1 passive/listening oriented, 5 neutral, and "
             + "10 assertive/leading conversation: "
-        ))
+        )
+        assertiveness = -1 if assertiveness == "" else int(assertiveness)
 
-    return Utterance(text,
+    return Utterance(
+            user_id,
+            DialogueAct[dialogue_act],
             topic,
             sentiment,
             assertiveness,
-            DialogueAct[dialogue_act]
+            text
         ), mood
 
 def construct_persona(x):

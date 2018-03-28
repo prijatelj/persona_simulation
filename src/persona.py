@@ -44,33 +44,62 @@ class DialogueAct(Enum):
     disagreement            = 308
     silence                 = 309
 
-    backchannel             = 400 # Listening Oriented. Perhaps unnecessary?
+    backchannel             = 400 # Listening Oriented
     request_confirmation    = 401
     request_clarification   = 402
     repeat                  = 403
     paraphrase              = 404
-    #sympathetic             = 405 # aggree/disagree w/ positive sentiment
-    #unsympathetic           = 406 # agree/disagree w/ negative sentiment
 
     other                   = 000 # should record what user specifies as other.
+
+def is_statement(da):
+    """ checks if dialogue act is a statement."""
+    return isinstance(da, DialogueAct) \
+        and da.value >= DialogueAct.statement.value \
+        and da.value < DialogueAct.statement.value + 100
+
+def is_question(da):
+    """ checks if dialogue act is a question."""
+    return isinstance(da, DialogueAct) \
+        and da.value >= DialogueAct.question.value \
+        and da.value < DialogueAct.question.value + 100
+
+def is_response_action(da):
+    """ checks if dialogue act is a response_action."""
+    return isinstance(da, DialogueAct) \
+        and da.value >= DialogueAct.response_action.value \
+        and da.value < DialogueAct.response_action.value + 100
+
+def is_backchannel(da):
+    """ checks if dialogue act is a backchannel."""
+    return isinstance(da, DialogueAct) \
+        and da.value >= DialogueAct.backchannel.value \
+        and da.value < DialogueAct.backchannel.value + 100
 
 class Utterance(object):
     """Defines an individual utterance with the specific NLU information"""
     #TODO add speaker of utterance for identification!
-    def __init__(self, text, topic, sentiment, assertiveness, dialogue_act):
-        assert isinstance(text, str)
-        assert "[s]" in text and "[/s]" in text #Subject Tags, rest = prediacte
+    # TODO add syntactic representation, esp. for questions!
+    def __init__(self, speaker, dialogue_act, topic, sentiment, assertiveness,
+            text=None):
+        assert text is None or isinstance(text, str)
+        #assert "[s]" in text and "[/s]" in text #Subject Tags, rest = prediacte
         assert isinstance(topic, str)
         assert isinstance(sentiment, int) and sentiment >= 1 and sentiment <= 10
         assert isinstance(assertiveness, int) and assertiveness >= 1 \
             and assertiveness <= 10
         assert isinstance(dialogue_act, DialogueAct)
+        assert isinstance(speaker, str)
 
-        self.__text = text.strip()
+        if isinstance(text, str):
+            self.__text = text.strip()
+        else:
+            self.__text = text
         self.__topic = topic.lower().strip()
         self.__sentiment = sentiment
         self.__assertiveness = assertiveness
         self.__dialogue_act = dialogue_act
+        self.__speaker = speaker
 
     @property
     def text(self):
@@ -87,7 +116,6 @@ class Utterance(object):
         """The sentiment of the utterance"""
         return self.__sentiment
 
-    # TODO perhaps change assertiveness to assertiveness
     @property
     def assertiveness(self):
         """The assertiveness of the utterance"""
@@ -98,13 +126,32 @@ class Utterance(object):
         """The dialogue act to depict the intent of the utterance"""
         return self.__dialogue_act
 
+    @property
+    def speaker(self):
+        """The speaker of the utterance"""
+        return self.__speaker
+
+    def set_text(self, text):
+        self.__text = text.strip() if isinstance(text, str) else None
+
     def print_out(self):
         print(
+            "Speaker: ", self.speaker,
             "Topic: ", self.topic, "\n",
             "Dialogue Act: ", self.dialogue_act, "\n",
             "Sentiment: ", self.sentiment, "\n",
             "Aggressiveness: ", self.assertiveness, "\n",
             "Text: ", self.text, "\n"
+        )
+
+    def copy(self):
+        return Utterance(
+            self.__speaker,
+            self.__dialogue_act,
+            self.__topic,
+            self.__sentiment,
+            self.__assertiveness,
+            self.__text
         )
 
 class ConversationHistory(object):
@@ -137,16 +184,21 @@ class ConversationHistory(object):
         return self.__participants.copy()
 
     @property
-    def topic_to_utterances(self):
+    def topic_to_utterance(self):
         return self.__topic_to_utterances.copy()
+
+    @property
+    def last_utterance(self):
+        """ Peeks at last entered utterance """
+        return self.__utterances[next(reversed(self.__utterances))].copy()
 
     def add_utterance(self, utterance, date_time=None):
         assert isinstance(utterance, Utterance)
-        self.__utterances.append(utterance)
-
         if date_time is None:
             date_time = datetime.now()
-        self.__add_utterance_to_topic(utterance.topic, date_time)
+
+        self.__utterances[date_time] = utterance
+        self.__add_utterance_to_topic(utterance, date_time)
 
     def __add_utterance_to_topic(self, utterance, date_time):
         """Helper function to update topic_to_utterances dict"""

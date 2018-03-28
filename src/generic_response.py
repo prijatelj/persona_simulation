@@ -59,7 +59,7 @@ def farewell(persona, sentiment=None, formal=None):
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def agree(persona, sentiment=None, formal=None):
+def agreement(persona, sentiment=None, formal=None):
     neutral = ["I agree", "I agree with you"]
     pos = ["Definitely", "Absolutely"]
     neg = ["I suppose I agree", "I suppose I agree with you",
@@ -67,7 +67,7 @@ def agree(persona, sentiment=None, formal=None):
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def disagree(persona, sentiment=None, formal=None):
+def disagreement(persona, sentiment=None, formal=None):
     neutral = ["I disagree", "I disagree with you"]
     pos = ["I Definitely disagree", "I Absolutely disagree"]
     neg = ["I suppose I disagree", "I suppose I disagree with you",
@@ -93,7 +93,7 @@ def disconfirm(persona, sentiment=None, formal=None):
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def thanks(persona, sentiment=None, formal=None)
+def thanks(persona, sentiment=None, formal=None):
     neutral_formal = ["Thank you"]
     neutral_informal = ["Thanks"]
     pos = ["Thank you very much"]
@@ -103,7 +103,7 @@ def thanks(persona, sentiment=None, formal=None)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def apology(persona, sentiment=None, formal=None)
+def apology(persona, sentiment=None, formal=None):
     neutral_formal = ["I apologize", "I did not mean to offend",
         "I did not intend any offense", "I did not mean any offense"]
     neutral_informal = ["I am sorry"]
@@ -114,17 +114,17 @@ def apology(persona, sentiment=None, formal=None)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def backchannel(persona, sentiment=None, formal=None)
+def backchannel(persona, sentiment=None, formal=None):
     neutral = ["Uh-huh", "Hmm", "Mm-hmm", "Okay", "I see"]
     pos = ["Wow"]
 
     return sentiment_select(persona, sentiment, neutral, pos)
 
-def request_confirmation(persona, sentiment=None, formal=None)
+def request_confirmation(persona, sentiment=None, formal=None):
     neutral = ["Really?", "Is that so?"]
     return sentiment_select(persona, sentiment, neutral)
 
-def request_clarification(persona, sentiment=None, formal=None)
+def request_clarification(persona, sentiment=None, formal=None):
     neutral = ["Could you repeat that?", "Could you clarify that?",
         "What do you mean?", "In what way?", "Could you elaborate on that?",
         "Could you rephrase that?"]
@@ -177,7 +177,7 @@ def sentiment_select(persona, sentiment, neutral, pos=None, neg=None):
     # use conditional statement to determine type and how to handle.
     sentiment = sentiment if sentiment is not None else persona.personality.mood
     if neg is not None and sentiment < 4:
-        return neg[randint(0, len(neg)]
+        return neg[randint(0, len(neg))]
     elif pos is not None and sentiment > 6:
         return pos[randint(0, len(pos))]
     else:
@@ -191,6 +191,12 @@ def formality_select(formality, informal, formal=None):
     elif not formality:
         return informal
 
+# TODO perhaps find and use a preexisting word list for these and others?
+# OR, actually use an ontology and infer what is a negative adj, etc...
+def positive_adjective():
+    formal_adj = ["excellent", "wonderful", "good", "great"]
+    informal_adj = ["superb"]
+
 def negative_adjective(formal):
-    formal_adj = ["pathetic", "unintelligent"]
-    informal_adj = ["lame", "stupid", ""]
+    formal_adj = ["pathetic", "unintelligent", "foolish", "terrible"]
+    informal_adj = ["lame", "stupid", "idiotic"]

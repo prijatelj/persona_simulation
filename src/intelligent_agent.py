@@ -5,8 +5,10 @@ the user's utterance.
 :author: Derek S. Prijatelj
 """
 
-from src.persona import DialogueAct
-from src.nlg import generate_response
+from nltk.chat.eliza import eliza_chatbot
+from src.persona import DialogueAct, Utterance, \
+    is_statement, is_question, is_response_action, is_backchannel
+from src.nlg import generate_response_text
 
 _standard_topic = [
     "self_user",
@@ -40,7 +42,8 @@ def decide_response(conversation_history, responder_id, persona_dict):
     Tell a joke.
     """
     responder = persona_dict[responder_id]
-    participants = conversation_history.participants.remove(responder_id)
+    participants = conversation_history.participants
+    participants.remove(responder_id)
     user = persona_dict[participants[0]]
 
     # determine state of conversation
@@ -48,12 +51,26 @@ def decide_response(conversation_history, responder_id, persona_dict):
     # Assess mood and magnitude of change to mood necessary
     mood_magnitude = responder.personality.mood - user.personality.mood
 
-    user_previous_utterance = conversation_history.utterances[-1]
+    last_utterance = conversation_history.last_utterance
 
     #if len(conversation_history.utterances) > 0:
-    #    user_previous_utterance = conversation_history.utterances[-1]
+    #    last_utterance = conversation_history.utterances[-1]
     #else: # No previous utterances, we are giving first utterance
     #   # TODO give first utterance, should never occur in prototype
+
+    if last_utterance.dialogue_act == DialogueAct.farewell:
+        return Utterance(
+            responder_id,
+            DialogueAct.farewell,
+            "self_user",
+            responder.personality.mood,
+            responder.personality.assertiveness
+        )
+    #elif last_utterance.dialogue_act == DialogueAct.greeting:
+
+
+
+
 
     if len(conversation_history.topic_to_utterance.keys()) == 0:
         # No topic discussed, query new topics.
@@ -75,30 +92,31 @@ def decide_response(conversation_history, responder_id, persona_dict):
 
         # check DA, Topic sentiment, Topic,
 
-        # determine appropriate DA.
-        if topic_is_self(user_previous_utterance.topic) \
-                and dialogue_act_is_question(
-                    user_previous_utterance.dialogue_act
-                ):
-            dialogue_act = DialogueAct(
-                user_previous_utterance.dialogue_act.value - 100
-            )
-
+        if topic_is_self(last_utterance.topic) \
+                or topic_is_user(last_utterance.topic):
+            return psychiatrist(last_utterance, responder_id)
         # Check if standard topic:
-        if user_previous_utterance.topic in _standard_topic:
+        elif last_utterance.topic in _standard_topic:
             utterance_metadata = handle_standard_topic(simulation,
                 user,
                 conversation_history,
                 mood_magnitude
             )
 
-def dialogue_act_is_question(da):
-    return da.value >= DialogueAct.question.value \
-        and da.value < DialogueAct.question.value + 100
+        # determine appropriate DA.
+        if topic_is_self(last_utterance.topic) \
+                and is_question(last_utterance.dialogue_act):
+            dialogue_act = DialogueAct(
+                last_utterance.dialogue_act.value - 100
+            )
 
 def topic_is_self(topic):
     """ Check if the topic is about the simulation/chatbot itself. """
-    return topic in ["you", "yourself"]
+    return topic in ["you", "yourself", "self_bot"]
+
+def topic_is_user(topic):
+    """ Check if the topic is about the user. """
+    return topic in ["me", "myself", "self_user"]
 
 def handle_standard_topic(conversation_history, responder, user, mood_magnitude):
     """ Handles responding to standard topics, such as weather and news.  """
@@ -140,6 +158,13 @@ def joke():
     """ Generate joke, optionally related to previous utterance. """
     return
 
-def psychiatrist():
+def psychiatrist(utterance, responder_id):
     """ Use ELIZA to generate respons eutterances when the topic is on user. """
-    return
+    return Utterance(
+        responder_id,
+        DialogueAct.other,
+        "self_user",
+        5,
+        5,
+        eliza_chatbot.respond(utterance.text)
+    )
