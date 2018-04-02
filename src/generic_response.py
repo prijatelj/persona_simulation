@@ -39,7 +39,7 @@ def farewell(persona, sentiment=None, formal=None):
     pos_formal = []
     pos_informal = ["have a good one", "take it easy", "take care"]
     neg = ["I am done with you", "good riddance", "we're done"]
-    #insult = ["Sod off"]
+    #insult = ["sod off"]
 
     # farewell initial
     # I've got to get going or I must be going
@@ -121,22 +121,23 @@ def backchannel(persona, sentiment=None, formal=None):
     return sentiment_select(persona, sentiment, neutral, pos)
 
 def request_confirmation(persona, sentiment=None, formal=None):
-    neutral = ["really?", "Is that so?"]
+    neutral = ["really", "Is that so"]
     return sentiment_select(persona, sentiment, neutral)
 
 def request_clarification(persona, sentiment=None, formal=None):
-    neutral = ["could you repeat that?", "could you clarify that?",
-        "what do you mean?", "In what way?", "could you elaborate on that?",
-        "could you rephrase that?"]
-    pos = ["could you please repeat that?", "could you please clarify that?",
-        "could you please rephrase that?", "could you please elaborate?"]
+    neutral = ["could you repeat that", "could you clarify that",
+        "what do you mean", "In what way", "could you elaborate on that",
+        "could you rephrase that"]
+    pos = ["could you please repeat that", "could you please clarify that",
+        "could you please rephrase that", "could you please elaborate"]
     neg = ["you need to do a better job explaining what you mean"]
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def query(persona, sentiment=None, formal=None):
-    neutral = ["Tell me more."]
-    pos = ["please tell me more."]
-    neg = ["what else?"]
+    neutral = ["tell me more", "inform me on this"]
+    pos = ["please", "could you"]
+    pos = [s1 + " " + s2 for s1 in pos for s2 in neutral]
+    neg = ["what else"]
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 """
@@ -149,8 +150,8 @@ def question_information(persona, sentiment=None):
     return
 
 def question_experience(persona, sentiment=None):
-    neutral = ["do you have a notable experience with that?"]
-    pos = ["could you please share a notable experience with that?"]
+    neutral = ["do you have a notable experience with that"]
+    pos = ["could you please share a notable experience with that"]
     neg = ["what kind of"]
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
