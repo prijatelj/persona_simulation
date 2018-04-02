@@ -12,33 +12,33 @@ from random import randint
 
 def greeting(persona, sentiment=None, formal=None):
     """ Given persona, selects appropriate response. """
-    neutral_formal = ["Hello", "Greetings"]
-    neutral_informal = ["Hi", "Hey", "Hey there"]
+    neutral_formal = ["hello", "greetings"]
+    neutral_informal = ["hi", "hey", "hey there"]
     pos = []
 
     now = datetime.now()
 
     if now.hour < 12:
-        pos += ["Good Morning", "Good day"]
-        neutral_informal += ["Morning"]
+        pos += ["good morning", "good day"]
+        neutral_informal += ["morning"]
     elif now.hour >= 12 and now.hour <= 19:
-        pos += ["Good Afternoon", "Good day"]
-        neutral_informal += ["Afternoon"]
+        pos += ["good afternoon", "good day"]
+        neutral_informal += ["afternoon"]
     else:
-        pos += ["Good Evening"]
-        neutral_informal += ["Evening"]
+        pos += ["good evening"]
+        neutral_informal += ["evening"]
 
     neutral = formality_select(formal, neutral_informal, neutral_formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def farewell(persona, sentiment=None, formal=None):
-    neutral_formal = ["Goodbye", "Farewell"]
-    neutral_informal = ["Bye", "Later", "See you later", "Talk to you later",
-        "So long", "Until next time"]
+    neutral_formal = ["goodbye", "farewell"]
+    neutral_informal = ["bye", "later", "see you later", "talk to you later",
+        "so long", "until next time"]
     pos_formal = []
-    pos_informal = ["Have a good one", "Take it easy", "Take care"]
-    neg = ["I am done with you", "Good riddance", "We're done"]
+    pos_informal = ["have a good one", "take it easy", "take care"]
+    neg = ["I am done with you", "good riddance", "we're done"]
     #insult = ["Sod off"]
 
     # farewell initial
@@ -49,10 +49,10 @@ def farewell(persona, sentiment=None, formal=None):
     now = datetime.now()
 
     if now.hour <= 19:
-        pos_formal += ["Have a good day", "Have a nice day"]
+        pos_formal += ["ave a good day", "have a nice day"]
     else:
-        pos_formal += ["Have a good evening"]
-        pos_informal += ["Good night"]
+        pos_formal += ["have a good evening"]
+        pos_informal += ["good night"]
 
     neutral = formality_select(formal, neutral_informal, neutral_formal)
     pos = formality_select(formal, pos_informal, pos_formal)
@@ -61,43 +61,43 @@ def farewell(persona, sentiment=None, formal=None):
 
 def agreement(persona, sentiment=None, formal=None):
     neutral = ["I agree", "I agree with you"]
-    pos = ["Definitely", "Absolutely"]
+    pos = ["definitely", "absolutely"]
     neg = ["I suppose I agree", "I suppose I agree with you",
-        "Unfortunately, I agree", "Unforunteately, I agree with you"]
+        "unfortunately, I agree", "unforunteately, I agree with you"]
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def disagreement(persona, sentiment=None, formal=None):
     neutral = ["I disagree", "I disagree with you"]
-    pos = ["I Definitely disagree", "I Absolutely disagree"]
+    pos = ["I definitely disagree", "I absolutely disagree"]
     neg = ["I suppose I disagree", "I suppose I disagree with you",
-        "Unfortunately, I disagree", "Unforunteately, I disagree with you"]
+        "unfortunately, I disagree", "unforunteately, I disagree with you"]
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def confirm(persona, sentiment=None, formal=None):
-    neutral_formal = ["Yes"]
-    neutral_informal = ["Yeah", "Okay"] # uh-huh mm-hmm??
-    pos = ["Absolutely, yes", "Definitely, yes", "Definitely, yes"]
-    neg = ["Unfortunately, yes"]
+    neutral_formal = ["yes"]
+    neutral_informal = ["yeah", "okay"] # uh-huh mm-hmm??
+    pos = ["absolutely, yes", "definitely, yes", "definitely, yes"]
+    neg = ["unfortunately, yes"]
 
     neutral = formality_select(formal, neutral_informal, neutral_formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def disconfirm(persona, sentiment=None, formal=None):
-    neutral_formal = ["No"]
-    neutral_informal = ["Nah"]
-    neg = ["Absolutely not", "Definitely not", "Definitely no"]
-    neg = ["Unfortunately, no"]
+    neutral_formal = ["no"]
+    neutral_informal = ["nah"]
+    neg = ["absolutely not", "definitely not", "definitely no"]
+    neg = ["unfortunately, no"]
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def thanks(persona, sentiment=None, formal=None):
-    neutral_formal = ["Thank you"]
-    neutral_informal = ["Thanks"]
-    pos = ["Thank you very much"]
-    neg = ["Thanks for nothing"]
+    neutral_formal = ["thank you"]
+    neutral_informal = ["thanks"]
+    pos = ["thank you very much"]
+    neg = ["thanks for nothing"]
 
     neutral = formality_select(formal, neutral_informal, neutral_formal)
 
@@ -107,7 +107,7 @@ def apology(persona, sentiment=None, formal=None):
     neutral_formal = ["I apologize", "I did not mean to offend",
         "I did not intend any offense", "I did not mean any offense"]
     neutral_informal = ["I am sorry"]
-    pos = ["Please forgive me"]
+    pos = ["please forgive me"]
     neg = ["I beg your pardon", "Forgive me"]
 
     neutral = formality_select(formal, neutral_informal, neutral_formal)
@@ -115,28 +115,28 @@ def apology(persona, sentiment=None, formal=None):
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def backchannel(persona, sentiment=None, formal=None):
-    neutral = ["Uh-huh", "Hmm", "Mm-hmm", "Okay", "I see"]
-    pos = ["Wow"]
+    neutral = ["uh-huh", "hmm", "mm-hmm", "okay", "I see"]
+    pos = ["wow"]
 
     return sentiment_select(persona, sentiment, neutral, pos)
 
 def request_confirmation(persona, sentiment=None, formal=None):
-    neutral = ["Really?", "Is that so?"]
+    neutral = ["really?", "Is that so?"]
     return sentiment_select(persona, sentiment, neutral)
 
 def request_clarification(persona, sentiment=None, formal=None):
-    neutral = ["Could you repeat that?", "Could you clarify that?",
-        "What do you mean?", "In what way?", "Could you elaborate on that?",
-        "Could you rephrase that?"]
-    pos = ["Could you please repeat that?", "Could you please clarify that?",
-        "Could you please rephrase that?", "Could you please elaborate?"]
-    neg = ["You need to do a better job explaining what you mean"]
+    neutral = ["could you repeat that?", "could you clarify that?",
+        "what do you mean?", "In what way?", "could you elaborate on that?",
+        "could you rephrase that?"]
+    pos = ["could you please repeat that?", "could you please clarify that?",
+        "could you please rephrase that?", "could you please elaborate?"]
+    neg = ["you need to do a better job explaining what you mean"]
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def query(persona, sentiment=None, formal=None):
     neutral = ["Tell me more."]
-    pos = ["Please tell me more."]
-    neg = ["What else?"]
+    pos = ["please tell me more."]
+    neg = ["what else?"]
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 """
@@ -149,9 +149,9 @@ def question_information(persona, sentiment=None):
     return
 
 def question_experience(persona, sentiment=None):
-    neutral = ["Do you have a notable experience with that?"]
-    pos = ["Could you please share a notable experience with that?"]
-    neg = ["What kind of"]
+    neutral = ["do you have a notable experience with that?"]
+    pos = ["could you please share a notable experience with that?"]
+    neg = ["what kind of"]
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def question_preference(persona, sentiment=None):
