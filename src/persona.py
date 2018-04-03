@@ -148,7 +148,7 @@ class Utterance(object):
 
     def print_out(self):
         print(
-            "Speaker: ", self.speaker,
+            "Speaker: ", self.speaker, "\n",
             "Topic: ", self.topic, "\n",
             "Dialogue Act: ", self.dialogue_act, "\n",
             "Sentiment: ", self.sentiment, "\n",
