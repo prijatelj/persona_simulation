@@ -5,7 +5,7 @@ persona's response utterance.
 :author: Derek S. Prijatelj
 """
 
-from persona import DialogueAct as DA, is_statement, is_question, \
+from conversation import DialogueAct as DA, is_statement, is_question, \
     is_response_action, is_backchannel
 import generic_response
 

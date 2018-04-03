@@ -9,7 +9,7 @@ persona's personality.
 """
 from datetime import datetime
 from random import choice, getrandbits
-from persona import QuestionType
+from conversation import QuestionType
 import insult
 
 def greeting(persona, sentiment=None, formal=None):

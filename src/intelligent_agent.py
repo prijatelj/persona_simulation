@@ -2,11 +2,13 @@
 This is the intelligent agent behind the decision making of how to respond to
 the user's utterance.
 
+# TODO ensure the rules apply to abstract concepts, ensure ML applies to well defined problems. Rule = Abstract && Macro, ML = explict/well-defined && Micro
+
 :author: Derek S. Prijatelj
 """
 
 from nltk.chat.eliza import eliza_chatbot
-from persona import DialogueAct, Utterance, \
+from conversation import DialogueAct, Utterance, \
     is_statement, is_question, is_response_action, is_backchannel
 from nlg import generate_response_text #TODO remove , run in src dir.
 
@@ -45,13 +47,10 @@ def decide_response(conversation_history, responder_id, persona_dict):
     participants = conversation_history.participants
     participants.remove(responder_id)
     user = persona_dict[participants[0]]
-
-    # determine state of conversation
+    last_utterance = conversation_history.last_utterance
 
     # Assess mood and magnitude of change to mood necessary
     mood_magnitude = responder.personality.mood - user.personality.mood
-
-    last_utterance = conversation_history.last_utterance
 
     #if len(conversation_history.utterances) > 0:
     #    last_utterance = conversation_history.utterances[-1]
@@ -75,8 +74,9 @@ def decide_response(conversation_history, responder_id, persona_dict):
             responder.personality.assertiveness
         )
 
+    # TODO add ability to reference previous conversations for returning users
     if len(conversation_history.topic_to_utterance.keys()) == 0:
-        # No topic discussed, query new topics.
+        # New conversation started
         query()
 
         # prev = greeting, then greeting, query, etc.
@@ -84,13 +84,9 @@ def decide_response(conversation_history, responder_id, persona_dict):
         # statement then ... idk response? who are you?
 
     else:
-        # topics have been discussed, and conversation ongoing???
-        # TODO to determine if this conversation instance is new or ongoing,
-        # check time of last utterance
-        # For now, assume that if previous topics exist, then ongoing convo.
-
+        # topics have been discussed, and conversation ongoing
         # go through topics of desired sentiment till exhausted.
-        # query new topics
+        # query new topics if topics of desired sentiment are exhausted.
         #TODO Need a way to know what topics have been exhausted! ia only.
 
         # check DA, Topic sentiment, Topic,

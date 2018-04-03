@@ -4,7 +4,8 @@ Main interface to test/run the simulation.
 :author: Derek S. Prijatelj
 """
 from nlu_cli import nlu_cli, parse_args
-from persona import Persona, ConversationHistory, DialogueAct
+from persona import Persona
+from conversation import ConversationHistory, DialogueAct
 import intelligent_agent as intelligent_agent
 import nlg as nlg
 
@@ -12,8 +13,11 @@ def main():
     args = parse_args()
     mood = args.mood
 
+    # Ask user for their unique name: TODO have bot ask and parse this in convo
+    username = input("Enter your name: ").strip()
+
     # Create both Personas for the user and the system
-    user_persona = Persona("user", mood, 5)
+    user_persona = Persona(username, mood, 5)
     simulated_persona = args.personality_profile
 
     # personality dict:
@@ -22,7 +26,6 @@ def main():
         simulated_persona.name:simulated_persona
     }
 
-    # initiate conversation
     conversation_history = ConversationHistory(
         [user_persona.name, simulated_persona.name]
     )
@@ -31,6 +34,7 @@ def main():
     while ongoing_conversation:
         # Query user for utterance
         utterance, mood = nlu_cli(mood, user_persona.name)
+        print("\n")
 
         # update conversation history
         conversation_history.add_utterance(utterance)
@@ -40,7 +44,7 @@ def main():
             user_persona.personality.set_mood(mood)
         # inference on assertiveness if necessary for predictions
 
-        # TODO update simulated persona(s) for future versions
+        # TODO update simulated persona(s) for future versions, non-prototype
 
         # Simulated Personality must determine how to respond and what to say
         # This is mostly outside of NLG, although the what to say part somewhat
@@ -63,6 +67,8 @@ def main():
 
         if response_metadata.dialogue_act == DialogueAct.farewell:
             ongoing_conversation = False
+
+    # TODO Save conversation history log in "database" appropriately.
 
 if __name__ == "__main__":
     main()
