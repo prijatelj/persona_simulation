@@ -3,10 +3,10 @@ Main interface to test/run the simulation.
 
 :author: Derek S. Prijatelj
 """
-from src.nlu_cli import nlu_cli, parse_args
-from src.persona import Persona, ConversationHistory, DialogueAct
-import src.intelligent_agent as intelligent_agent
-import src.nlg as nlg
+from nlu_cli import nlu_cli, parse_args
+from persona import Persona, ConversationHistory, DialogueAct
+import intelligent_agent as intelligent_agent
+import nlg as nlg
 
 def main():
     args = parse_args()
@@ -47,14 +47,14 @@ def main():
         # overlaps with NLG task of content determination.
         response_metadata = intelligent_agent.decide_response(
             conversation_history,
-            user_persona.name,
+            simulated_persona.name,
             persona_dict
         )
 
         # call NLG module to generate actual text, if needed.
         response_utterance = nlg.generate_response_text(
             response_metadata, conversation_history, simulated_persona) \
-            if response_metadata.text is None else response_metadata
+                if response_metadata.text is None else response_metadata
 
         response_utterance.print_out()
 

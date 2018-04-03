@@ -17,7 +17,7 @@ TODO: Switch from Python to C++ or Cython or Java.
 """
 
 import argparse
-from src.persona import DialogueAct, Utterance, Persona, ConversationHistory
+from persona import DialogueAct, Utterance, Persona, ConversationHistory
 
 def nlu_cli(default_mood, user_id):
     """ Command line interface for user to give all NLU data of utterance. """

@@ -8,7 +8,9 @@ persona's personality.
 :author: Derek S. Prijatelj
 """
 from datetime import datetime
-from random import randint
+from random import choice, getrandbits
+from persona import QuestionType
+import insult
 
 def greeting(persona, sentiment=None, formal=None):
     """ Given persona, selects appropriate response. """
@@ -30,7 +32,7 @@ def greeting(persona, sentiment=None, formal=None):
 
     neutral = formality_select(formal, neutral_informal, neutral_formal)
 
-    return sentiment_select(persona, sentiment, neutral, pos, neg)
+    return sentiment_select(persona, sentiment, neutral, pos)
 
 def farewell(persona, sentiment=None, formal=None):
     neutral_formal = ["goodbye", "farewell"]
@@ -133,56 +135,109 @@ def request_clarification(persona, sentiment=None, formal=None):
     neg = ["you need to do a better job explaining what you mean"]
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def query(persona, sentiment=None, formal=None):
-    neutral = ["tell me more", "inform me on this"]
-    pos = ["please", "could you"]
-    pos = [s1 + " " + s2 for s1 in pos for s2 in neutral]
-    neg = ["what else"]
+# TODO requires past phrase, include topic
+def query(persona, sentiment=None, formal=None, topic="that"):
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 """
     Probably will need more articulation for Statement and Question.
     Such as ensuring a statement was not already said or asked...
-
 """
-def question_information(persona, sentiment=None):
-
+def question_information(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    neutral = ["tell me more", "inform me on " + topic]
+    pos = ["please", "could you"]
+    pos = [s1 + " " + s2 for s1 in pos for s2 in neutral]
+    neg = ["what else is there on " + topic]
     return
 
-def question_experience(persona, sentiment=None):
-    neutral = ["do you have a notable experience with that"]
-    pos = ["could you please share a notable experience with that"]
-    neg = ["what kind of"]
+def question_experience(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    neutral = [
+        "do you have an experience with " + topic,
+        "do you have an interesting experience with " + topic,
+        "do you have a notable experience with " + topic,
+    ]
+    pos_formal = [
+        "could you please share your experience with " + topic,
+        "could you please share a notable experience with " + topic,
+        "could you please share an interesting experience with " + topic
+    ]
+    pos_informal = [
+        "what kind of " + positive_adj(formal)
+            + " experience have you had with " + topic
+    ]
+    neg = [
+        "what kind of " + negative_adj(formal)
+            + " experience have you had with " + topic
+    ]
+
+    pos = formality_select(pos_formal, pos_informal, formal)
+
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def question_preference(persona, sentiment=None):
-    return
+def question_preference(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    if question_type == QuestionType.polar:
+        neutral = ["do you have a preference on " + topic]
+    else: # elif question_type == QuestionType.wh:
+        neutral = ["what is your preference on " + topic]
+        neg = ["what is your " + negative_adj(formal) + " preference on "
+            + topic]
+    return sentiment_select(persona, sentiment, neutral, neg=neg)
 
-def question_opinion(persona, sentiment=None):
-    return
+def question_opinion(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    if question_type == QuestionType.polar:
+        neutral = ["do you have a opinion on " + topic]
+    else: # elif question_type == QuestionType.wh:
+        neutral = ["what is your opinion on " + topic]
+        neg = ["what is your " + negative_adj(formal) + " opinion on " + topic]
 
-def question_desire(persona, sentiment=None):
-    return
+    return sentiment_select(persona, sentiment, neutral, neg=neg)
 
-def question_plan(persona, sentiment=None):
-    return
+def question_desire(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    if topic == "general" or topic == "self_user":
+        neutral = [
+            "what are your wants",
+            "what are your desires"
+        ]
+        if question_type == QuestionType.polar:
+            neg = ["is there something you want"]
+        else:
+            neg = ["what do you want"]
+    else:
+        neutral = ["do you want to do something with regards to " + topic]
+        neg = ["I suppose you want to do something with regards to " + topic]
+    return sentiment_select(persona, sentiment, neutral, neg=neg)
+
+def question_plan(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    if topic == "general" or topic == "self_user":
+        neutral = ["what are your plans"]
+        neg = ["what are your" + negative_adj(formal) + " plans"]
+    return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def insult():
-    return
+    return insult.shakespeare(bool(getrandbits(1)), bool(getrandbits(1)))
 
 def compliment():
     return
 
+"""
+    Helper Methods:
+"""
 def sentiment_select(persona, sentiment, neutral, pos=None, neg=None):
     # TODO perhaps have persona/sentiment accept either a person obj, or int val
     # use conditional statement to determine type and how to handle.
     sentiment = sentiment if sentiment is not None else persona.personality.mood
     if neg is not None and sentiment < 4:
-        return neg[randint(0, len(neg))]
+        return choice(neg)
     elif pos is not None and sentiment > 6:
-        return pos[randint(0, len(pos))]
+        return choice(pos)
     else:
-        return neutral[randint(0, len(neutral))]
+        return choice(neutral)
 
 def formality_select(formality, informal, formal=None):
     if formality is None:
@@ -192,12 +247,17 @@ def formality_select(formality, informal, formal=None):
     elif not formality:
         return informal
 
+def question_type_select(question_type, **kargs):
+    return
+
 # TODO perhaps find and use a preexisting word list for these and others?
 # OR, actually use an ontology and infer what is a negative adj, etc...
-def positive_adjective():
-    formal_adj = ["excellent", "wonderful", "good", "great"]
+def positive_adj(formal=None):
+    formal_adj = ["excellent", "wonderful", "good", "great", "delightful"]
     informal_adj = ["superb"]
+    return formality_select(formal_adj, informal_adj, formal)
 
-def negative_adjective(formal):
+def negative_adj(formal=None):
     formal_adj = ["pathetic", "unintelligent", "foolish", "terrible"]
     informal_adj = ["lame", "stupid", "idiotic"]
+    return formality_select(formal_adj, informal_adj, formal)

@@ -1,0 +1,203 @@
+# Lists of Shakespearean adverbs, adjectives, and nouns meant to be randomly
+
+# selected from and appended to one another in order to form an insult. This was
+# apparently the original work of an English teacher at Center Grove High
+# School in Greenwood Indiana named Jerry Maguire.
+#
+# The additions by Chris Seidal are included and marked, but modified to either
+# better fit the appropriate list, remove dialect, or for a more universal
+# usage.
+#
+# Taken from Chris Seidel's website:
+# http://www.pangloss.com/seidel/shake_rule.html
+
+adverb:
+  - artless
+  - bawdy
+  - beslubbering
+  - bootless
+  - churlish
+  - cockered
+  - clouted
+  - craven
+  - currish
+  - dankish
+  - dissembling
+  - droning
+  - errant
+  - fawning
+  - fobbing
+  - froward
+  - frothy
+  - gleeking
+  - goatish
+  - gorbellied
+  - impertinent
+  - infectious
+  - jarring
+  - loggerheaded
+  - lumpish
+  - mammering
+  - mangled
+  - mewling
+  - paunchy
+  - pribbling
+  - puking
+  - puny
+  - qualling
+  - rank
+  - reeky
+  - roguish
+  - ruttish
+  - saucy
+  - spleeny
+  - spongy
+  - surly
+  - tottering
+  - unmuzzled
+  - vain
+  - venomed
+  - villainous
+  - warped
+  - wayward
+  - weedy
+  - yeasty
+  # Additions by Chis Seidel
+  - caluminous
+  - cullionly
+  - burly-boned
+  - fishified
+  - fusty
+  - misbegotten
+  - odiferous
+  - poisonous
+  - wart-necked
+  - wimpled
+adjective:
+  - base-court
+  - bat-fowling
+  - beef-witted
+  - beetle-headed
+  - boil-brained
+  - clapper-clawed
+  - clay-brained
+  - common-kissing
+  - crook-pated
+  - dismal-dreaming
+  - dizzy-eyed
+  - doghearted
+  - dread-bolted
+  - earth-vexing
+  - elf-skinned
+  - fat-kidneyed
+  - fen-sucked
+  - flap-mouthed
+  - fly-bitten
+  - folly-fallen
+  - fool-born
+  - full-gorged
+  - guts-griping
+  - half-faced
+  - hasty-witted
+  - hedge-born
+  - hell-hated
+  - idle-headed
+  - ill-breeding
+  - ill-nurtured
+  - knotty-pated
+  - milk-livered
+  - motley-minded
+  - onion-eyed
+  - plume-plucked
+  - pottle-deep
+  - pox-marked
+  - reeling-ripe
+  - rough-hewn
+  - rude-growing
+  - rump-fed
+  - shard-borne
+  - sheep-biting
+  - spur-galled
+  - swag-bellied
+  - tardy-gaited
+  - tickle-brained
+  - toad-spotted
+  - unchin-snouted
+  - weather-bitten
+  # Additions by Chris Seidel
+  - brazen-faced
+  - brunch-backed
+  - leaden-footed
+  - lily-livered
+  - malmsey-nosed
+  - muddy-mettled
+  - pigeon-livered
+  - scale-sided
+  - scurvy-valiant
+  - unwashed
+noun:
+  - apple-john
+  - baggage
+  - barnacle
+  - bladder
+  - boar-pig
+  - bugbear
+  - bum-bailey
+  - canker-blossom
+  - clack-dish
+  - clotpole
+  - coxcomb
+  - codpiece
+  - death-token
+  - dewberry
+  - flap-dragon
+  - flax-wench
+  - flirt-gill
+  - foot-licker
+  - fustilarian
+  - giglet
+  - gudgeon
+  - haggard
+  - harpy
+  - hedge-pig
+  - horn-beast
+  - hugger-mugger
+  - joithead
+  - lewdster
+  - lout
+  - maggot-pie
+  - malt-worm
+  - mammet
+  - measle
+  - minnow
+  - miscreant
+  - moldwarp
+  - mumble-news
+  - nut-hook
+  - pigeon-egg
+  - pignut
+  - puttock
+  - pumpion
+  - ratsbane
+  - scut
+  - skainsmate
+  - strumpet
+  - varlot
+  - vassal
+  - whey-face
+  - wagtail
+  # Additions by Chris Seidel
+  - basket-cockle
+  - blind-worm
+  - devil-monk
+  - jolt-head
+  - knave
+  - malcontent
+  - popinjay
+  - scullian
+  - toad
+  - rampallian
+  - rascal
+  - whorespawn
+  # Additions by Derek Prijatelj, did not ensure occurence in Shakespeare works
+  - wretch

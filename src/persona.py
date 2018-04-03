@@ -52,6 +52,18 @@ class DialogueAct(Enum):
 
     other                   = 000 # should record what user specifies as other.
 
+class QuestionType(Enum):
+    """
+    The type of questions used in utterances for classification and better
+    handling.
+    """
+    polar       = 100
+    declarative = 101
+    wh          = 200
+    open_ended  = 300
+    rhetorical  = 400
+    other       = 000
+
 def is_statement(da):
     """ checks if dialogue act is a statement."""
     return isinstance(da, DialogueAct) \

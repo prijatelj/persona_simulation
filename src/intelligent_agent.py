@@ -6,9 +6,9 @@ the user's utterance.
 """
 
 from nltk.chat.eliza import eliza_chatbot
-from src.persona import DialogueAct, Utterance, \
+from persona import DialogueAct, Utterance, \
     is_statement, is_question, is_response_action, is_backchannel
-from src.nlg import generate_response_text
+from nlg import generate_response_text #TODO remove , run in src dir.
 
 _standard_topic = [
     "self_user",
@@ -66,11 +66,14 @@ def decide_response(conversation_history, responder_id, persona_dict):
             responder.personality.mood,
             responder.personality.assertiveness
         )
-    #elif last_utterance.dialogue_act == DialogueAct.greeting:
-
-
-
-
+    elif last_utterance.dialogue_act == DialogueAct.greeting:
+        return Utterance(
+            responder_id,
+            DialogueAct.greeting,
+            "self_user",
+            responder.personality.mood,
+            responder.personality.assertiveness
+        )
 
     if len(conversation_history.topic_to_utterance.keys()) == 0:
         # No topic discussed, query new topics.
@@ -92,6 +95,7 @@ def decide_response(conversation_history, responder_id, persona_dict):
 
         # check DA, Topic sentiment, Topic,
 
+        #TODO psychiatrist for self_user only, not self_bot.
         if topic_is_self(last_utterance.topic) \
                 or topic_is_user(last_utterance.topic):
             return psychiatrist(last_utterance, responder_id)

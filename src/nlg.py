@@ -5,9 +5,9 @@ persona's response utterance.
 :author: Derek S. Prijatelj
 """
 
-from src.persona import DialogueAct as DA, is_statement, is_question, \
+from persona import DialogueAct as DA, is_statement, is_question, \
     is_response_action, is_backchannel
-from src import generic_response
+import generic_response
 
 def generate_response_text(utterance_metadata, conversation_history,
         persona):
