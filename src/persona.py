@@ -117,6 +117,12 @@ class Persona(object):
     def set_topic(self, topic, sentiment):
         self.__topic_sentiment[topic] = sentiment
 
+    def topic_magnitude(self, topic, desired_sentiment):
+        if topic in self.__topic_sentiment.keys():
+            return desired_sentiment - self.__topic_sentiment[topic]
+        else:
+            return None
+
     def save_personality_profile(self, path_output_json):
         """ store personality profile (prototype's persona) into json """
         with open(path_output_json, 'w', encoding='utf-8') as json_output:

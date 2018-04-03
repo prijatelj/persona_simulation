@@ -91,6 +91,13 @@ def decide_response(conversation_history, responder_id, persona_dict):
 
         # check DA, Topic sentiment, Topic,
 
+        # Change topic or no?
+        topic_magnitude = responder.topic_magnitude(
+            last_utterance.topic,
+            responder.personality.mood
+        )
+
+
         #TODO psychiatrist for self_user only, not self_bot.
         if topic_is_self(last_utterance.topic) \
                 or topic_is_user(last_utterance.topic):
