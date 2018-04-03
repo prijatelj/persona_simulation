@@ -32,85 +32,87 @@ def generate_response_text(utterance_metadata, conversation_history,
 
 def statement(utterance_metadata, persona):
     if utterance_metadata.dialogue_act == DA.statement:
-        utterance_metadata.set_text(generic_response.statement(persona))
+        text = generic_response.statement(persona))
     elif utterance_metadata.dialogue_act == DA.statement_information:
-        utterance_metadata.set_text(
-            generic_response.statement_information(persona))
+        text = generic_response.statement_information(persona))
     elif utterance_metadata.dialogue_act == DA.statement_experience:
-        utterance_metadata.set_text(
-            generic_response.statement_experience(persona))
+        text = generic_response.statement_experience(persona))
     elif utterance_metadata.dialogue_act == DA.statement_preference:
-        utterance_metadata.set_text(
-            generic_response.statement_preference(persona))
+        text = generic_response.statement_preference(persona))
     elif utterance_metadata.dialogue_act == DA.statement_opinion:
-        utterance_metadata.set_text(
-            generic_response.statement_opinion(persona))
+        text = generic_response.statement_opinion(persona))
     elif utterance_metadata.dialogue_act == DA.statement_desire:
-        utterance_metadata.set_text(
-            generic_response.statement_desire(persona))
+        text = generic_response.statement_desire(persona))
     elif utterance_metadata.dialogue_act == DA.statement_plan:
-        utterance_metadata.set_text(
-            generic_response.statement_plan(persona))
+        text = generic_response.statement_plan(persona))
+
+    text = text[0].upper() + text[1:] + "."
+    utterance_metadata.set_text(text)
     return utterance_metadata
 
 def question(utterance_metadata, persona):
     if utterance_metadata.dialogue_act == DA.question:
-        utterance_metadata.set_text(generic_response.question(persona))
+        text = generic_response.question(persona))
     elif utterance_metadata.dialogue_act == DA.question_information:
-        utterance_metadata.set_text(
-            generic_response.question_information(persona))
+        text = generic_response.question_information(persona))
     elif utterance_metadata.dialogue_act == DA.question_experience:
-        utterance_metadata.set_text(
-            generic_response.question_experience(persona))
+        text = generic_response.question_experience(persona))
     elif utterance_metadata.dialogue_act == DA.question_preference:
-        utterance_metadata.set_text(
-            generic_response.question_preference(persona))
+        text = generic_response.question_preference(persona))
     elif utterance_metadata.dialogue_act == DA.question_opinion:
-        utterance_metadata.set_text(
-            generic_response.question_opinion(persona))
+        text = generic_response.question_opinion(persona))
     elif utterance_metadata.dialogue_act == DA.question_desire:
-        utterance_metadata.set_text(
-            generic_response.question_desire(persona))
+        text = generic_response.question_desire(persona))
     elif utterance_metadata.dialogue_act == DA.question_plan:
-        utterance_metadata.set_text(
-            generic_response.question_plan(persona))
+        text = generic_response.question_plan(persona))
+
+    text = text[0].upper() + text[1:] + "?"
+    utterance_metadata.set_text(text)
     return utterance_metadata
 
 def response_action(utterance_metadata, persona):
     if utterance_metadata.dialogue_act == DA.greeting:
-        utterance_metadata.set_text(generic_response.greeting(persona))
+        text = generic_response.greeting(persona))
     elif utterance_metadata.dialogue_act == DA.farewell:
-        utterance_metadata.set_text(generic_response.farewell(persona))
+        text = generic_response.farewell(persona))
     elif utterance_metadata.dialogue_act == DA.thanks:
-        utterance_metadata.set_text(generic_response.thanks(persona))
+        text = generic_response.thanks(persona))
     elif utterance_metadata.dialogue_act == DA.apology:
-        utterance_metadata.set_text(generic_response.apology(persona))
+        text = generic_response.apology(persona))
     elif utterance_metadata.dialogue_act == DA.confirm:
-        utterance_metadata.set_text(generic_response.confirm(persona))
+        text = generic_response.confirm(persona))
     elif utterance_metadata.dialogue_act == DA.disconfirm:
-        utterance_metadata.set_text(generic_response.disconfirm(persona))
+        text = generic_response.disconfirm(persona))
     elif utterance_metadata.dialogue_act == DA.agreement:
-        utterance_metadata.set_text(generic_response.agreement(persona))
+        text = generic_response.agreement(persona))
     elif utterance_metadata.dialogue_act == DA.disagreement:
-        utterance_metadata.set_text(generic_response.disagreement(persona))
+        text = generic_response.disagreement(persona))
     elif utterance_metadata.dialogue_act == DA.silence:
-        utterance_metadata.set_text(generic_response.silence(persona))
+        text = generic_response.silence(persona))
+
+    text = text[0].upper() + text[1:] + "."
+    utterance_metadata.set_text(text)
     return utterance_metadata
 
 def backchannel(utterance_metadata, persona):
     if utterance_metadata.dialogue_act == DA.backchannel:
-        utterance_metadata.set_text(generic_response.backchannel(persona))
+        text = generic_response.backchannel(persona)
     elif utterance_metadata.dialogue_act == DA.request_confirmation:
-        utterance_metadata.set_text(
-            generic_response.request_confirmation(persona))
+        text = generic_response.request_confirmation(persona)
     elif utterance_metadata.dialogue_act == DA.request_clarification:
-        utterance_metadata.set_text(
-            generic_response.request_clarification(persona))
+        text = generic_response.request_clarification(persona)
     elif utterance_metadata.dialogue_act == DA.repeat:
         utterance_metadata.set_text(persona.utterances[-1])
+        return utterance_metadata
     elif utterance_metadata.dialogue_act == DA.paraphrase:
-        utterance_metadata.set_text(generic_response.paraphrase(persona))
+        text = generic_response.paraphrase(persona)
+
+    text = text[0].upper() + text[1:] + "."
+    utterance_metadata.set_text(text)
     return utterance_metadata
 
 def other(utterance_metadata, persona):
+    # TODO somehow implement other...
+    #text = text[0].upper() + text[1:] + "."
+    #utterance_metadata.set_text(text)
     return utterance_metadata
