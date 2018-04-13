@@ -18,7 +18,8 @@ TODO: Switch from Python to C++ or Cython or Java.
 
 import argparse
 from persona import Persona
-from conversation import DialogueAct, Utterance, ConversationHistory
+from conversation import DialogueAct, QuestionType, Utterance, \
+    ConversationHistory, is_question
 
 def nlu_cli(default_mood, user_id):
     """ Command line interface for user to give all NLU data of utterance. """
@@ -43,16 +44,29 @@ def nlu_cli(default_mood, user_id):
     while dialogue_act not in da_names:
         dialogue_act = input("Enter dialogue Act: ").strip().lower()
 
-        # TODO fix help print out descriptions
+        # TODO add help print out descriptions
         if first and dialogue_act not in da_names:
             first = False
             # Help, details what each dialogue act means.
             print("Enter a dialogue act from list below:\n", da_names)
 
-    #text = ""
-    #while "[s]" not in text or "[/s]" not in text:
+    question_type = None
+    if is_question(DialogueAct[dialogue_act]):
+        question_type = ""
+        first = True
+        question_types = [qt.name for qt in QuestionType]
+        while question_type not in question_types:
+            question_type = input("Enter question type: ").strip().lower()
+
+            # TODO add help print out descriptions
+            if first and question_type not in da_names:
+                first = False
+                # Help, details what each dialogue act means.
+                print("Enter a question type from list below:\n",
+                    question_types)
+
     text = input(
-        "Enter utterance text: "# with [s] and [/s] tags around the subject: "
+        "Enter utterance text: "
     ).strip()
 
     sentiment = -1
@@ -78,7 +92,8 @@ def nlu_cli(default_mood, user_id):
             topic,
             sentiment,
             assertiveness,
-            text
+            text,
+            question_type
         ), mood
 
 def construct_persona(x):
