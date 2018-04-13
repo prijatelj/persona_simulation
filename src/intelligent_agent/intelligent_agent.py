@@ -15,7 +15,7 @@ from conversation import DialogueAct, Utterance, \
 from nlg.nlg import generate_response_text #TODO remove , run in src dir.
 from intelligent_agent import decision_tree_static
 
-_standard_topic = [
+_standard_topic = {
     "self_user",
     "self_bot",
     "weather",
@@ -23,7 +23,7 @@ _standard_topic = [
     "politics",
     "sports",
     "joke"
-]
+}
 
 #def decide_response(simulation, user, conversation_history):
 def decide_response(conversation_history, chatbot_id, persona_dict):
