@@ -14,7 +14,8 @@ from intelligent_agent import tactic
 
 def decision_tree_static(conversation_history, chatbot, user, personas=None):
     """
-    A manual decision tree to implement a rule based system as a baseline.
+    A manually constructed decision tree to implement a rule based system as a
+    baseline.
 
     :param conversation_history: current ConversationHistory
     :param chatbot: Persona of chatbot

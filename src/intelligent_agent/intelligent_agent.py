@@ -13,6 +13,7 @@ from conversation import DialogueAct, Utterance, \
     is_statement, is_question, is_response_action, is_backchannel, \
     topic_is_self, topic_is_user
 from nlg.nlg import generate_response_text #TODO remove , run in src dir.
+from intelligent_agent import decision_tree_static
 
 _standard_topic = [
     "self_user",
