@@ -3,11 +3,11 @@ Main interface to test/run the simulation.
 
 :author: Derek S. Prijatelj
 """
-from nlu_cli import nlu_cli, parse_args
+from nlu.nlu_cli import nlu_cli, parse_args
 from persona import Persona
 from conversation import ConversationHistory, DialogueAct
-import intelligent_agent as intelligent_agent
-import nlg as nlg
+from intelligent_agent import intelligent_agent
+from nlg import nlg
 
 def main():
     args = parse_args()
@@ -42,7 +42,7 @@ def main():
         # update user persona
         if user_persona.personality.mood != mood:
             user_persona.personality.set_mood(mood)
-        # inference on assertiveness if necessary for predictions
+        # TODO Save topic sentiment for user_persona!
 
         # TODO update simulated persona(s) for future versions, non-prototype
 

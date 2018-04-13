@@ -5,6 +5,7 @@ persona in conversation.
 :author: Derek S. Prijatelj
 """
 
+from collections import OrderedDict
 from datetime import datetime
 import json
 
@@ -85,10 +86,13 @@ class Persona(object):
 
         assert isinstance(name, str)
         assert isinstance(personality, Personality)
-        assert isinstance(topic_sentiment, dict) or topic_sentiment is None
+        assert isinstance(topic_sentiment, OrderedDict) \
+            or topic_sentiment is None
         if topic_sentiment:
             # values ints [1,10]
             assert isinstance(list(topic_sentiment.values())[0], int)
+        else:
+            topic_sentiment = OrderedDict()
 
         #self.__id = name # maybe necessary later, not in prototype. Use names.
         self.__name = name
@@ -118,6 +122,7 @@ class Persona(object):
         self.__topic_sentiment[topic] = sentiment
 
     def topic_magnitude(self, topic, desired_sentiment):
+        """ The difference of the desired and topic sentiments """
         if topic in self.__topic_sentiment.keys():
             return desired_sentiment - self.__topic_sentiment[topic]
         else:
