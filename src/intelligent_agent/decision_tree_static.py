@@ -9,7 +9,7 @@ based on hierarch:
 
 :author: Derek S. Prijatelj
 """
-
+import numpy as np
 from intelligent_agent import tactic
 
 def decision_tree_static(conversation, chatbot, user, personas=None):
@@ -90,6 +90,9 @@ def psych():
 def change_topic(mood_magnitude, topic_magnitude, chatbot):
     # if topic magnitude is far from desired, (and is mood_magnitude) change
     # TODO can calculate how much the desire to change is based on assertiveness
+
+    # TODO look at last Dialogue Act, if Question, request, something requiring
+    # a response, take that into consideration!
     if chatbot.personality.assertiveness > 5:
         return abs(topic_magnitude) >= 2 and abs(mood_magnitude) >= 2)
     else:
@@ -125,6 +128,11 @@ def change_topic_assertive(conversation, chatbot, user, mood_magnitude,
     # provide alts & begin talking
 
     # begin talking (abruptly change topic)
+
+
+
+    # TODO look at last Dialogue Act, if Question, request, something requiring
+    # a response, take that into consideration! change topic, but address this.
 
     return
 
