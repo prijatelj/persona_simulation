@@ -19,7 +19,7 @@ TODO: Switch from Python to C++ or Cython or Java.
 import argparse
 from persona import Persona
 from conversation import DialogueAct, QuestionType, Utterance, \
-    ConversationHistory, is_question
+    Conversation, is_question
 
 def nlu_cli(default_mood, user_id):
     """ Command line interface for user to give all NLU data of utterance. """
@@ -131,7 +131,7 @@ def main():
     #simulated_persona = Persona(args.personality_profile)
 
     # initiate conversation
-    conversation_history = ConversationHistory(
+    conversation_history = Conversation(
         [user_persona, simulated_persona]
     )
 

@@ -56,14 +56,14 @@ def decision_tree_static(conversation_history, chatbot, user, personas=None):
         # query new topics if topics of desired sentiment are exhausted.
         #TODO Need a way to know what topics have been exhausted! ia only. is it ia only?
 
-        if change_topic(mood_magnitude, topic_magnitude,
-                chatbot.personality.mood):
-            if respond_passive(chatbot, user, mood_magnitude, topic_magnitude):
-
-            else:
-
-        else:
-
+        #if change_topic(mood_magnitude, topic_magnitude,
+        #        chatbot.personality.mood):
+        #   if respond_passive(chatbot, user, mood_magnitude, topic_magnitude):
+        #
+        #   else:
+        #
+        #else:
+        return
     return
 
 def psych():

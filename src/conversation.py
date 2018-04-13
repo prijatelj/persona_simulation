@@ -4,9 +4,19 @@ All classes and functions related to engaging in a conversation.
 :author: Derek S. Prijatelj
 """
 
+# TODO Need better assertions/error throwing for controlling arg types in class
+# TODO after prototype, figure out how to handle utterances @ same datetime,
+#   esp. across Conversations in a ConversationHistory
+# TODO Swap from OrderedDict to SortedSet, at least w/in Conversation
+# TODO make all to_string() simple be to_string version of to_dict()/json_dump
+#   use vars(self) to make dict of attributes. may help w/ json_dump^^^^
+# TODO properly implement to_string and print, etc. __repr__, __str__, etc...
+
 from collections import OrderedDict
 from datetime import datetime
 from enum import Enum
+from functools import total_ordering
+#from sortedcontainers import SortedSet
 
 class DialogueAct(Enum):
     """
@@ -22,7 +32,6 @@ class DialogueAct(Enum):
     statement_desire        = 105
     statement_plan          = 106
 
-    #TODO may want y/n, declarative, wh, etc... question types somehow in NLU...
     question                = 200 # dummy enum, may serve as other/general quest
     question_information    = 201 # perhaps a gneral between fact, exp, & pref.
     question_experience     = 202
@@ -89,18 +98,17 @@ def is_backchannel(da):
 
 def topic_is_self(topic):
     """ Check if the topic is about the simulation/chatbot itself. """
-    return topic in ["you", "yourself", "self_bot"]
+    return topic in {"you", "yourself", "self_bot"}
 
 def topic_is_user(topic):
     """ Check if the topic is about the user. """
-    return topic in ["me", "myself", "self_user"]
+    return topic in {"me", "myself", "self_user"}
 
+@total_ordering
 class Utterance(object):
     """Defines an individual utterance with the specific NLU information"""
-    # TODO add speaker of utterance for identification!
-    # TODO add syntactic representation, esp. for questions!
     def __init__(self, speaker, dialogue_act, topic, sentiment, assertiveness,
-            text=None, question_type=None):
+            text=None, question_type=None, date_time=datetime.now()):
         assert text is None or isinstance(text, str)
         assert isinstance(topic, str)
         assert isinstance(sentiment, int) and sentiment >= 1 and sentiment <= 10
@@ -118,6 +126,7 @@ class Utterance(object):
         self.__assertiveness = assertiveness
         self.__dialogue_act = dialogue_act
         self.__speaker = speaker
+        self.__date_time = date_time
 
         if question_type and isinstance(question_type, QuestionType) \
                 and is_question(dialogue_act):
@@ -126,14 +135,9 @@ class Utterance(object):
             self.__question_type = None
 
     @property
-    def text(self):
-        """The string representation of the utterance's text"""
-        return self.__text
-
-    @property
-    def topic(self):
-        """The conversational topic of the utterance"""
-        return self.__topic
+    def speaker(self):
+        """The speaker of the utterance"""
+        return self.__speaker
 
     @property
     def sentiment(self):
@@ -156,13 +160,23 @@ class Utterance(object):
         return self.__question_type
 
     @property
-    def speaker(self):
-        """The speaker of the utterance"""
-        return self.__speaker
+    def topic(self):
+        """The conversational topic of the utterance"""
+        return self.__topic
+
+    @property
+    def text(self):
+        """The string representation of the utterance's text"""
+        return self.__text
+
+    @property
+    def date_time(self):
+        return self.__date_time
 
     def set_text(self, text):
         self.__text = text.strip() if isinstance(text, str) else None
 
+    # TODO to_string(self):
     def print_out(self):
         print(
             "Speaker: ", self.speaker, "\n",
@@ -176,6 +190,44 @@ class Utterance(object):
 
     def copy(self):
         return Utterance(
+            self.speaker,
+            self.dialogue_act,
+            self.topic,
+            self.sentiment,
+            self.assertiveness,
+            self.text,
+            self.question_type,
+            self.date_time
+        )
+
+    def __hash__(self):
+        return hash((
+            self.__speaker,
+            self.__dialogue_act,
+            self.__topic,
+            self.__sentiment,
+            self.__assertiveness,
+            self.__text,
+            self.__question_type,
+            self.__date_time
+        ))
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, Utterance)
+            and self.__speaker == other.__speaker
+            and self.__dialogue_act == other.__dialogue_act
+            and self.__topic == other.__topic
+            and self.__sentiment == other.__sentiment
+            and self.__assertiveness == other.__assertiveness
+            and self.__text == other.__text
+            and self.__question_type == other.__question_type
+            and self.__date_time == other.__date_time
+        )
+
+    def __lt__(self, other):
+        return ((
+            self.__date_time,
             self.__speaker,
             self.__dialogue_act,
             self.__topic,
@@ -183,20 +235,30 @@ class Utterance(object):
             self.__assertiveness,
             self.__text,
             self.__question_type
-        )
+        ) < (
+            other.__date_time,
+            other.__speaker,
+            other.__dialogue_act,
+            other.__topic,
+            other.__sentiment,
+            other.__assertiveness,
+            other.__text,
+            other.__question_type
+        ))
 
-class ConversationHistory(object):
-    """Contains the conversation history with its NLU information."""
-    def __init__(self, participants=[], utterances=OrderedDict()):
+class Conversation(object):
+    """ A representation of a single conversation """
+    def __init__(self, participants=set(), utterances=OrderedDict(),
+            topic_to_utterances=None):
         """
         :param utterances: OrderedDict of datetime to Utterance objects
             detailing the conversation history.
-        :param participants: list of personas participating in conversation
-        :param topic_to_utterance: Dict of str "topic" to list(datetime) of
+        :param participants: set of personas participating in conversation
+        :param topic_to_utterances: Dict of str "topic" to list(datetime) of
             utterances under this topic in conversation history.
         """
         #TODO make participants dict of participant id's/hashes
-        assert isinstance(participants, list)
+        assert isinstance(participants, set)
         assert isinstance(utterances, OrderedDict) \
             and (len(utterances.values()) == 0
             or isinstance(utterances.values()[0], Utterance))
@@ -204,20 +266,24 @@ class ConversationHistory(object):
         self.__utterances = utterances
         self.__participants = participants
 
-        self.__topic_to_utterances = {}
-        for k,u in utterances.items():
-            self.__add_utterance_to_topic(u, k)
+        if topic_to_utterances is None:
+            self.__topic_to_utterances = {}
+            for k,u in utterances.items():
+                self.__add_utterance_to_topic(u, k)
+        else:
+            assert(isinstance(topic_to_utterances, dict))
+            self.__topic_to_utterances = topic_to_utterances
 
     @property
     def utterances(self):
-        return self.__utterances
+        return self.__utterances.copy()
 
     @property
     def participants(self):
         return self.__participants.copy()
 
     @property
-    def topic_to_utterance(self):
+    def topic_to_utterances(self):
         return self.__topic_to_utterances.copy()
 
     @property
@@ -225,11 +291,9 @@ class ConversationHistory(object):
         """ Peeks at last entered utterance """
         return self.__utterances[next(reversed(self.__utterances))].copy()
 
-    def add_utterance(self, utterance, date_time=None):
+    def add_utterance(self, utterance, date_time=datetime.now()):
         assert isinstance(utterance, Utterance)
-        if date_time is None:
-            date_time = datetime.now()
-
+        assert isinstance(date_time, datetime)
         self.__utterances[date_time] = utterance
         self.__add_utterance_to_topic(utterance, date_time)
 
@@ -241,8 +305,9 @@ class ConversationHistory(object):
             self.__topic_to_utterances[utterance.topic] = [date_time]
 
     def add_participant(self, participant):
-        self.__participants.append(participant)
+        self.__participants.add(participant)
 
+    # TODO to_string(self):
     def print_out(self):
         print("Utterances:\n")
         for u in self.utterances:
@@ -251,3 +316,100 @@ class ConversationHistory(object):
         print("\nParticipants:\n")
         for p in self.participants:
             print(p.print_out())
+
+    # TODO
+    def topic_to_utterances_to_str(self):
+        return
+
+    def copy(self):
+        return Conversation(
+            self.participants,
+            self.utterances,
+            self.topic_to_utterances
+        )
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, Conversation)
+            and self.__participants == other.__participants
+            and self.__utterances == other.__utterances
+            and self.__topic_to_utterances == other.__topic_to_utterances
+        )
+
+class ConversationHistory(object):
+    """ A history of conversations between participants and associated data """
+    def __init__(self, conversations=OrderedDict(),
+            topic_to_conversations=None):
+        """
+        :param conversations: OrderedDict of datetime to Conversation objects
+        :param topic_to_conversations: Dict of str "topic" to list(datetime) of
+            conversations under this topic in conversation history.
+        """
+        self.__conversations = conversations
+
+        if topic_to_conversations is None:
+            self.__topic_to_conversations = {}
+            for k,u in conversations.items():
+                self.__add_conversation_to_topic(u, k)
+        else:
+            assert(isinstance(topic_to_conversations, dict))
+            self.__topic_to_conversations = topic_to_conversations
+
+    @property
+    def conversations(self):
+        return self.__conversations.copy()
+
+    @property
+    def topic_to_conversations():
+        return self.__topic_to_conversations.copy()
+
+    @property
+    def last_conversation(self):
+        """ Peeks at last entered utterance """
+        return self.__conversations[next(reversed(self.__conversations))].copy()
+
+    def get_utterances_from_topic(self, topic):
+        """ return all topic related utterances from all conversations
+        :return OrderedDict<datetime, Utterance>: OrderedDict of datetime to
+            Utterance.
+        """
+        # TODO handle duplicate time_stamps across and w/in Conversations
+        utterances = OrderedDict()
+        for conv in self.__topic_to_conversations[topic]:
+            for u_date_time in conversations[conv].topic_to_utterances[topic]:
+                utterances.update(
+                    {u_date_time:conversations[conv].utterances[u_date_time]}
+                )
+        return utterances
+
+    def add_conversation(self, conversation, date_time=datetime.now()):
+        assert isinstance(conversation, Conversation)
+        assert isinstance(date_time, datetime)
+        self.__conversations[date_time] = conversation
+        self.__add_conversation_to_topic(conversation, date_time)
+
+    def __add_conversation_to_topic(self, conversation, date_time):
+        """Helper function to update topic_to_conversations dict"""
+        for utterance in conversation.utterances.values():
+            if utterance.topic in self.__topic_to_conversations.keys():
+                self.__topic_to_conversations[utterance.topic].append(date_time)
+            else:
+                self.__topic_to_conversations[utterance.topic] = [date_time]
+
+    # TODO update_conversation_to_topic(self): update if conversations include new topics
+
+    # TODO to_string(self): make string of dict version.
+    def print_out(self):
+        print("Conversations:\n")
+        for c in self.conversations:
+            c.print_out()
+
+    # TODO
+    def topic_to_conversations_to_string(self):
+        return
+
+    def copy(self):
+        return ConversationHistory(
+            self.conversations,
+            self.topic_to_conversations
+        )

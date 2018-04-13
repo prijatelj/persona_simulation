@@ -36,7 +36,7 @@ def decide_response(conversation_history, chatbot_id, persona_dict):
     chatbot = persona_dict[chatbot_id]
     participants = conversation_history.participants
     participants.remove(chatbot_id)
-    user = persona_dict[participants[0]]
+    user = persona_dict[next(iter(participants))]
     last_utterance = conversation_history.last_utterance
 
     # Assess mood and magnitude of change to mood necessary

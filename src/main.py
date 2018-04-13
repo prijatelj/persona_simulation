@@ -5,7 +5,7 @@ Main interface to test/run the simulation.
 """
 from nlu.nlu_cli import nlu_cli, parse_args
 from persona import Persona
-from conversation import ConversationHistory, DialogueAct
+from conversation import Conversation, DialogueAct
 from intelligent_agent import intelligent_agent
 from nlg import nlg
 
@@ -26,8 +26,8 @@ def main():
         simulated_persona.name:simulated_persona
     }
 
-    conversation_history = ConversationHistory(
-        [user_persona.name, simulated_persona.name]
+    conversation_history = Conversation(
+        {user_persona.name, simulated_persona.name}
     )
 
     ongoing_conversation = True
