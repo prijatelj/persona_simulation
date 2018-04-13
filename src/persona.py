@@ -5,6 +5,10 @@ persona in conversation.
 :author: Derek S. Prijatelj
 """
 
+# TODO use vars(self) to get dict of attributes! do for json_dump
+#   perhaps override __vars__ (if possible) to allow recursive vars() on child
+#   make complete dict equivalent and ready for json_dump
+
 from collections import OrderedDict
 from datetime import datetime
 import json
