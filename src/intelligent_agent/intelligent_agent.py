@@ -13,7 +13,7 @@ from conversation import DialogueAct, Utterance, \
     is_statement, is_question, is_response_action, is_backchannel, \
     topic_is_self, topic_is_user
 from nlg.nlg import generate_response_text #TODO remove , run in src dir.
-from intelligent_agent import decision_tree_static
+from intelligent_agent.decision_tree_static import decision_tree_static
 
 _standard_topic = {
     "self_user",
@@ -48,6 +48,8 @@ def decide_response(conversation_history, chatbot_id, persona_dict):
         chatbot.personality.mood
     )
     # TODO give first utterance, should never occur in prototype
+
+    return decision_tree_static(conversation_history, chatbot, user, persona_dict)
 
     # static reactions:
     if last_utterance.dialogue_act == DialogueAct.farewell:

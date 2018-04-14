@@ -3,6 +3,7 @@ The tactics used in maintaining the conversation.
 """
 
 from nltk.chat.eliza import eliza_chatbot
+from conversation import Utterance, DialogueAct
 
 """
 Tactics:

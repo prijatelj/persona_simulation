@@ -219,6 +219,19 @@ def question_plan(persona, sentiment=None, formal=None, topic="that",
         neg = ["what are your" + negative_adj(formal) + " plans"]
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
+def statement_opinion(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    neutral = ["I am impartial to " + topic]
+    neg = [
+        "I don't care for this " + negative_adj(formal) + " subject",
+        "I do not like " + topic
+    ]
+    pos = [
+        "I like " + topic
+    ]
+
+    return sentiment_select(persona, sentiment, neutral, pos, neg)
+
 def insult():
     return insult.shakespeare(bool(getrandbits(1)), bool(getrandbits(1)))
 

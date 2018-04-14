@@ -96,6 +96,14 @@ def is_backchannel(da):
         and da.value >= DialogueAct.backchannel.value \
         and da.value < DialogueAct.backchannel.value + 100
 
+def statement_to_question(da):
+    """ returns respective question to statement dialogue act """
+    return DialogueAct(da.value + DialogueAct.statement.value)
+
+def question_to_statement(da):
+    """ returns respective question to statement dialogue act """
+    return DialogueAct(da.value - DialogueAct.statement.value)
+
 def topic_is_self(topic):
     """ Check if the topic is about the simulation/chatbot itself. """
     return topic in {"you", "yourself", "self_bot"}

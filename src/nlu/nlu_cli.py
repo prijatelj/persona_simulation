@@ -59,7 +59,7 @@ def nlu_cli(default_mood, user_id):
             question_type = input("Enter question type: ").strip().lower()
 
             # TODO add help print out descriptions
-            if first and question_type not in da_names:
+            if first and question_type not in question_types:
                 first = False
                 # Help, details what each dialogue act means.
                 print("Enter a question type from list below:\n",

@@ -10,7 +10,10 @@ based on hierarch:
 :author: Derek S. Prijatelj
 """
 import numpy as np
+#from scipy.stats import skewnorm
 from intelligent_agent import tactic
+from conversation import DialogueAct as DA, Utterance, is_question, \
+    topic_is_self, topic_is_user, question_to_statement, statement_to_question
 
 def decision_tree_static(conversation, chatbot, user, personas=None):
     """
@@ -22,6 +25,8 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
     :param user: Persona of user
     :param personas: Dictionary of str "persona_id" to Persona
     """
+    last_utterance = conversation.last_utterance
+
     # Assess mood and magnitude of change to mood necessary
     mood_magnitude = chatbot.personality.mood - user.personality.mood
 
@@ -32,7 +37,7 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
     )
 
     # static reactions:
-    if last_utterance.dialogue_act == DialogueAct.farewell:
+    if last_utterance.dialogue_act == DA.farewell:
         return Utterance(
             chatbot_id,
             DialogueAct.farewell,
@@ -41,13 +46,43 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
             chatbot.personality.assertiveness
         )
 
+
     # TODO add ability to reference previous conversations for returning users
-    if len(conversation.topic_to_utterance.keys()) <= 1:
+    if len(conversation.topic_to_utterances.keys()) <= 1:
         # New conversation started
-        tactic.query()
+        #tactic.query()
 
         # prev = greeting, then greeting, query, etc.
-        # prev = question, then answer
+        if last_utterance.dialogue_act == DA.greeting:
+            #TODO overcome limitation of not making text here. Ideal, would be able to be assertive and make greeting + question_ or statement_
+            # call nlg module here, from IA.
+            return Utterance(
+                chatbot.name,
+                DA.greeting,
+                "self_user",
+                chatbot.personality.mood,
+                chatbot.personality.assertiveness
+            )
+        elif is_question(last_utterance.dialogue_act):
+            return Utterance(
+                chatbot.name,
+                question_to_statement(last_utterance.dialogue_act),
+                last_utterance.topic,
+                chatbot.personality.mood,
+                chatbot.personality.assertiveness
+            )
+        elif is_statement(last_utterance.dialogue_act):
+            return Utterance(
+                chatbot.name,
+                statement_to_question(last_utterance.dialogue_act),
+                last_utterance.topic,
+                chatbot.personality.mood,
+                chatbot.personality.assertiveness
+            )
+        else:
+            return tactic.psychiatrist(last_utterance, chatbot.name)
+        #else:
+        #    return tactic.query()
         # statement then ... idk response? who are you?
 
     else: # Ongoing Conversation
@@ -59,7 +94,9 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
         # static response:
         # if greeting in middle of conversation either ignore or question it.
         #   perhaps respond confused.
-
+        if topic_is_self(last_utterance.topic) \
+                or topic_is_user(last_utterance.topic):
+            return tactic.psychiatrist(last_utterance, chatbot.name)
 
 
         if change_topic(mood_magnitude, topic_magnitude,
@@ -94,9 +131,9 @@ def change_topic(mood_magnitude, topic_magnitude, chatbot):
     # TODO look at last Dialogue Act, if Question, request, something requiring
     # a response, take that into consideration!
     if chatbot.personality.assertiveness > 5:
-        return abs(topic_magnitude) >= 2 and abs(mood_magnitude) >= 2)
+        return abs(topic_magnitude) >= 2 and abs(mood_magnitude) >= 2
     else:
-        return abs(topic_magnitude) >= 3 and abs(mood_magnitude) >= 3)
+        return abs(topic_magnitude) >= 3 and abs(mood_magnitude) >= 3
 
 def respond_passively(chatbot, user, mood_magnitude):
     # TODO can calculate how much desire to be assertive based on chatbot & user
@@ -109,14 +146,33 @@ def respond_passively(chatbot, user, mood_magnitude):
 # personality.mood is.
 def change_topic_passive(conversation, chatbot, user, mood_magnitude,
         topic_magnitude, personas):
-
+    choice = np.random.choice(3,1)
+    if choice == 0:
     # silence or no response or minimal response
-
+        return Utterance(
+            chatbot.name,
+            DA.silence,
+            last_utterance.topic,
+            chatbot.personality.mood,
+            chatbot.persoality.assertiveness
+        )
+    elif chocie == 1:
     # ask to change topic, no expression of sent, not alternatives
-
+        return Utterance(
+            chatbot.name,
+            DA.question_information,
+            last_utterance.topic,
+            chatbot.personality.mood,
+            chatbot.persoality.assertiveness
+        )
     # express sent, no alternatives
-
-    return
+    return Utterance(
+        chatbot.name,
+        DA.statement_opinion,
+        last_utterance.topic,
+        chatbot.personality.mood,
+        chatbot.persoality.assertiveness
+    )
 
 def change_topic_assertive(conversation, chatbot, user, mood_magnitude,
         topic_magnitude, personas):
