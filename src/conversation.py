@@ -16,6 +16,7 @@ from collections import OrderedDict
 from datetime import datetime
 from enum import Enum
 from functools import total_ordering
+import copy
 #from sortedcontainers import SortedSet
 
 class DialogueAct(Enum):
@@ -114,7 +115,18 @@ def topic_is_user(topic):
 
 @total_ordering
 class Utterance(object):
-    """Defines an individual utterance with the specific NLU information"""
+    """
+    Defines an individual utterance with the specific NLU information
+
+    :param speaker: str of persona_id speaking the Utterance
+    :param dialogue_act: DialogueAct of the Utterance
+    :param topic: str topic of the utterance for placement in ontology
+    :param sentiment: int [1,10] polar sentiment of the Utterance
+    :param assertiveness: int [1,10] assertiveness of the Utterance
+    :param text: str text of the Utterance, None if Utterance is placeholder
+    :param question_type: QuestionType of Utterance if DialogueAct is question
+    :param date_time: datetime of when the Utterance was spoken
+    """
     def __init__(self, speaker, dialogue_act, topic, sentiment, assertiveness,
             text=None, question_type=None, date_time=datetime.now()):
         assert text is None or isinstance(text, str)
@@ -184,19 +196,21 @@ class Utterance(object):
     def set_text(self, text):
         self.__text = text.strip() if isinstance(text, str) else None
 
-    # TODO to_string(self):
-    def print_out(self):
-        print(
-            "Speaker: ", self.speaker, "\n",
-            "Topic: ", self.topic, "\n",
-            "Dialogue Act: ", self.dialogue_act, "\n",
-            "Question Type: ", self.question_type, "\n",
-            "Sentiment: ", self.sentiment, "\n",
-            "Assertiveness: ", self.assertiveness, "\n",
-            "Text: ", self.text, "\n"
+    def __str__(self):
+        return (
+            "Speaker: " + self.speaker + "\n" +
+            "Topic: " + self.topic + "\n" +
+            "Dialogue Act: " + str(self.dialogue_act) + "\n" +
+            "Question Type: " + str(self.question_type) + "\n" +
+            "Sentiment: " + str(self.sentiment) + "\n" +
+            "Assertiveness: " + str(self.assertiveness) + "\n" +
+            "Text: " + self.text + "\n"
         )
 
-    def copy(self):
+    def __repr__(self):
+        return self.__str__()
+
+    def __copy__(self):
         return Utterance(
             self.speaker,
             self.dialogue_act,
@@ -207,6 +221,9 @@ class Utterance(object):
             self.question_type,
             self.date_time
         )
+
+    def copy(self):
+        return self.__copy__()
 
     def __hash__(self):
         return hash((
@@ -260,8 +277,8 @@ class Conversation(object):
             topic_to_utterances=None):
         """
         :param utterances: OrderedDict of datetime to Utterance objects
-            detailing the conversation history.
-        :param participants: set of personas participating in conversation
+            detailing the utterance history of the conversation.
+        :param participants: set of persona_ids participating in conversation
         :param topic_to_utterances: Dict of str "topic" to list(datetime) of
             utterances under this topic in conversation history.
         """
@@ -297,44 +314,55 @@ class Conversation(object):
     @property
     def last_utterance(self):
         """ Peeks at last entered utterance """
+        #return self.__utterances[len(self.__utterances) - 1].copy()
+        # for OrderedDict
         return self.__utterances[next(reversed(self.__utterances))].copy()
 
     def add_utterance(self, utterance, date_time=datetime.now()):
         assert isinstance(utterance, Utterance)
         assert isinstance(date_time, datetime)
         self.__utterances[date_time] = utterance
-        self.__add_utterance_to_topic(utterance, date_time)
+        #self.__utterances.add(utterance)
+        self.__add_utterance_to_topic(utterance)
+        #self.__add_utterance_to_topic(utterance, date_time)
 
-    def __add_utterance_to_topic(self, utterance, date_time):
+    #def __add_utterance_to_topic(self, utterance, date_time):
+    def __add_utterance_to_topic(self, utterance):
         """Helper function to update topic_to_utterances dict"""
         if utterance.topic in self.__topic_to_utterances.keys():
-            self.__topic_to_utterances[utterance.topic].append(date_time)
+            self.__topic_to_utterances[utterance.topic].append(
+                utterance.date_time)
         else:
-            self.__topic_to_utterances[utterance.topic] = [date_time]
+            self.__topic_to_utterances[utterance.topic] = [utterance.date_time]
 
     def add_participant(self, participant):
         self.__participants.add(participant)
 
-    # TODO to_string(self):
-    def print_out(self):
-        print("Utterances:\n")
+    def __str__(self):
+        s = "Utterances:\n"
         for u in self.utterances:
-            u.print_out()
+            s += str(u)
 
-        print("\nParticipants:\n")
+        s += "\nParticipants:\n"
         for p in self.participants:
-            print(p.print_out())
+            s += str(p)
+
+    def __repr__(self):
+        return self.__str__()
 
     # TODO
     def topic_to_utterances_to_str(self):
         return
 
-    def copy(self):
+    def __copy__(self):
         return Conversation(
             self.participants,
             self.utterances,
             self.topic_to_utterances
         )
+
+    def copy(self):
+        return self.__copy__()
 
     def __eq__(self, other):
         return (
@@ -343,6 +371,8 @@ class Conversation(object):
             and self.__utterances == other.__utterances
             and self.__topic_to_utterances == other.__topic_to_utterances
         )
+
+    # Conversation is mutable, therefore not hashable by Python standards
 
 class ConversationHistory(object):
     """ A history of conversations between participants and associated data """
@@ -416,8 +446,13 @@ class ConversationHistory(object):
     def topic_to_conversations_to_string(self):
         return
 
-    def copy(self):
+    def __copy__(self):
         return ConversationHistory(
             self.conversations,
             self.topic_to_conversations
         )
+
+    def copy(self):
+        return self.__copy__()
+
+    # ConversationHistory is mutable, therefore not hashable by Python standards

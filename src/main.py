@@ -60,7 +60,7 @@ def main():
             response_metadata, conversation_history, simulated_persona) \
                 if response_metadata.text is None else response_metadata
 
-        response_utterance.print_out()
+        print(response_utterance)
 
         # update conversation history
         conversation_history.add_utterance(response_utterance)
