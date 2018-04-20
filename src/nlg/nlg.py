@@ -102,7 +102,9 @@ def backchannel(utterance_metadata, persona):
     elif utterance_metadata.dialogue_act == DA.request_clarification:
         text = generic_response.request_clarification(persona)
     elif utterance_metadata.dialogue_act == DA.repeat:
-        utterance_metadata.set_text(persona.utterances[-1])
+        #utterance_metadata.set_text(persona.utterances[-1])
+        # TODO add conversation/convo history/last utterance to these
+        utterance_metadata.set_text("Please repeat that.")
         return utterance_metadata
     elif utterance_metadata.dialogue_act == DA.paraphrase:
         text = generic_response.paraphrase(persona)

@@ -30,7 +30,7 @@ def greeting(persona, sentiment=None, formal=None):
         pos += ["good evening"]
         neutral_informal += ["evening"]
 
-    neutral = formality_select(formal, neutral_informal, neutral_formal)
+    neutral = formality_select(neutral_formal, neutral_informal, formal)
 
     return sentiment_select(persona, sentiment, neutral, pos)
 
@@ -56,8 +56,8 @@ def farewell(persona, sentiment=None, formal=None):
         pos_formal += ["have a good evening"]
         pos_informal += ["good night"]
 
-    neutral = formality_select(formal, neutral_informal, neutral_formal)
-    pos = formality_select(formal, pos_informal, pos_formal)
+    neutral = formality_select(neutral_formal, neutral_informal, formal)
+    pos = formality_select(pos_formal, pos_informal, formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
@@ -83,15 +83,17 @@ def confirm(persona, sentiment=None, formal=None):
     pos = ["absolutely, yes", "definitely, yes", "definitely, yes"]
     neg = ["unfortunately, yes"]
 
-    neutral = formality_select(formal, neutral_informal, neutral_formal)
+    neutral = formality_select(neutral_formal, neutral_informal, formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def disconfirm(persona, sentiment=None, formal=None):
     neutral_formal = ["no"]
     neutral_informal = ["nah"]
+    pos = ["unfortunately, no"]
     neg = ["absolutely not", "definitely not", "definitely no"]
-    neg = ["unfortunately, no"]
+
+    neutral = formality_select(neutral_formal, neutral_informal, formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
@@ -101,7 +103,7 @@ def thanks(persona, sentiment=None, formal=None):
     pos = ["thank you very much"]
     neg = ["thanks for nothing"]
 
-    neutral = formality_select(formal, neutral_informal, neutral_formal)
+    neutral = formality_select(neutral_formal, neutral_informal, formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
@@ -112,7 +114,7 @@ def apology(persona, sentiment=None, formal=None):
     pos = ["please forgive me"]
     neg = ["I beg your pardon", "Forgive me"]
 
-    neutral = formality_select(formal, neutral_informal, neutral_formal)
+    neutral = formality_select(neutral_formal, neutral_informal, formal)
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
@@ -149,7 +151,7 @@ def question_information(persona, sentiment=None, formal=None, topic="that",
     pos = ["please", "could you"]
     pos = [s1 + " " + s2 for s1 in pos for s2 in neutral]
     neg = ["what else is there on " + topic]
-    return
+    return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def question_experience(persona, sentiment=None, formal=None, topic="that",
         question_type=None):
@@ -219,6 +221,37 @@ def question_plan(persona, sentiment=None, formal=None, topic="that",
         neg = ["what are your" + negative_adj(formal) + " plans"]
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
+def statement_information(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    neutral = [
+        "I do not have much to say on " + topic,
+        topic + " is a topic of conversation"
+    ]
+
+    neg = [insult_gen()]
+    neg = [s1 + ", " + s2 for s1 in neg for s2 in neutral]
+
+    return sentiment_select(persona, sentiment, neutral,neg=neg)
+
+def statement_experience(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    neutral = [
+        "I have no experience with " + topic,
+        "I have limited experience with " + topic,
+        "I have minimal experience with " + topic,
+        "I have no noteworthy experience with " + topic
+    ]
+
+    neg = [insult_gen()]
+    neg = [s1 + ", " + s2 for s1 in neg for s2 in neutral]
+
+    return sentiment_select(persona, sentiment, neutral,neg=neg)
+
+def statement_preference(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    return statement_opinion(persona, sentiment, formal, topic, question_type)
+    #return sentiment_select(persona, sentiment, neutral, pos, neg)
+
 def statement_opinion(persona, sentiment=None, formal=None, topic="that",
         question_type=None):
     neutral = ["I am impartial to " + topic]
@@ -232,11 +265,56 @@ def statement_opinion(persona, sentiment=None, formal=None, topic="that",
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def insult():
+def statement_desire(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    neutral = [
+        "I have no desire with regards to " + topic,
+        "I have limited desire with regards to " + topic,
+        "I have minimal desire with regards to " + topic,
+        "I have no noteworthy desire with regards to " + topic,
+        "I have no want with regards to " + topic,
+        "I have limited want with regards to " + topic,
+        "I have minimal want with regards to " + topic,
+        "I have no noteworthy want with regards to " + topic
+    ]
+
+    neg = [insult_gen()]
+    neg = [s1 + ", " + s2 for s1 in neg for s2 in neutral]
+
+    return sentiment_select(persona, sentiment, neutral,neg=neg)
+
+def statement_plan(persona, sentiment=None, formal=None, topic="that",
+        question_type=None):
+    neutral = [
+        "I have no plans with regards to " + topic,
+        "I have limited plans with regards to " + topic,
+        "I have minimal plans with regards to " + topic,
+        "I have no noteworthy plans with regards to " + topic,
+        "I have no plans related to " + topic,
+        "I have limited plans related to " + topic,
+        "I have minimal plans related to " + topic,
+        "I have no noteworthy plans related to " + topic
+    ]
+
+    neg = [insult_gen()]
+    neg = [s1 + ", " + s2 for s1 in neg for s2 in neutral]
+
+    return sentiment_select(persona, sentiment, neutral,neg=neg)
+
+    #return sentiment_select(persona, sentiment, neutral, pos, neg)
+
+def insult_gen():
     return insult.shakespeare(bool(getrandbits(1)), bool(getrandbits(1)))
 
 def compliment():
     return
+
+def silence(persona):
+    return ""
+
+def paraphrase(persona, sentiment=None,formal=None,):
+    #TODO: I cannot paraphrase yet. Just confirm or clarify what you said.
+    return request_clarification(persona, sentiment, formal)
 
 """
     Helper Methods:
@@ -252,12 +330,12 @@ def sentiment_select(persona, sentiment, neutral, pos=None, neg=None):
     else:
         return choice(neutral)
 
-def formality_select(formality, informal, formal=None):
-    if formality is None:
-        return formal + informal
-    elif formality:
-        return formal
-    elif not formality:
+def formality_select(formal_list, informal, formal=None):
+    if formal_list is None:
+        return formal_list + informal
+    elif formal_list:
+        return formal_list
+    elif not formal_list:
         return informal
 
 def question_type_select(question_type, **kargs):
@@ -268,9 +346,9 @@ def question_type_select(question_type, **kargs):
 def positive_adj(formal=None):
     formal_adj = ["excellent", "wonderful", "good", "great", "delightful"]
     informal_adj = ["superb"]
-    return formality_select(formal_adj, informal_adj, formal)
+    return choice(formality_select(formal_adj, informal_adj, formal))
 
 def negative_adj(formal=None):
     formal_adj = ["pathetic", "unintelligent", "foolish", "terrible"]
     informal_adj = ["lame", "stupid", "idiotic"]
-    return formality_select(formal_adj, informal_adj, formal)
+    return choice(formality_select(formal_adj, informal_adj, formal))

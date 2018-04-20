@@ -9,7 +9,10 @@ based on hierarch:
 
 :author: Derek S. Prijatelj
 """
+
+import csv
 import numpy as np
+import pandas
 #from scipy.stats import skewnorm
 from intelligent_agent import tactic
 from conversation import DialogueAct as DA, Utterance, is_question, \
@@ -64,7 +67,10 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
                 chatbot.personality.mood,
                 chatbot.personality.assertiveness
             )
-        elif is_question(last_utterance.dialogue_act):
+        elif ( not topic_is_self(last_utterance.topic)
+            and not topic_is_user(last_utterance.topic)
+            and is_question(last_utterance.dialogue_act)
+            ):
             return Utterance(
                 chatbot.name,
                 question_to_statement(last_utterance.dialogue_act),
@@ -72,7 +78,10 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
                 chatbot.personality.mood,
                 chatbot.personality.assertiveness
             )
-        elif is_statement(last_utterance.dialogue_act):
+        elif ( not topic_is_self(last_utterance.topic)
+            and not topic_is_user(last_utterance.topic)
+            and is_statement(last_utterance.dialogue_act)
+            ):
             return Utterance(
                 chatbot.name,
                 statement_to_question(last_utterance.dialogue_act),
@@ -96,7 +105,15 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
         # if greeting in middle of conversation either ignore or question it.
         #   perhaps respond confused.
 
+        # TODO replace response matrix with something better.
 
+        if topic_is_self(last_utterance.topic) \
+                or topic_is_user(last_utterance.topic):
+            return tactic.psychiatrist(last_utterance, chatbot.name)
+        else:
+            return response_matrix(last_utterance, chatbot)
+
+        """
         if change_topic(mood_magnitude, topic_magnitude,
                 chatbot.personality.mood):
             if respond_passively(chatbot, user, mood_magnitude):
@@ -117,6 +134,7 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
             else: # respond assertively
                 return stay_on_topic_assertive(conversation, chatbot, user,
                     mood_magnitude, topic_magnitude, personas)
+        """
 
 def change_topic(mood_magnitude, topic_magnitude, chatbot):
     # if topic magnitude is far from desired, (and is mood_magnitude) change
@@ -204,3 +222,19 @@ def stay_on_topic_assertive(conversation, chatbot, user, mood_magnitude,
     # Reinforce actively "yes and this too..."
 
     return
+
+def response_matrix(last_utterance, chatbot):
+    mat = np.loadtxt(open("../data/da_matrix.csv"), delimiter=",", skiprows=1,
+        usecols=range(1,27))
+    mat = mat / np.sum(mat, axis=0)
+
+    da_names = [da.name for da in DA if da.name not in
+        ["statement", "question", "response_action"]]
+    response_col = da_names.index(last_utterance.dialogue_act.name)
+    return Utterance(
+        chatbot.name,
+        DA[np.random.choice(da_names, p=mat[:, response_col])],
+        last_utterance.topic,
+        min(max(np.random.normal(chatbot.personality.mood, 2), 10), 1),
+        min(max(np.random.normal(chatbot.personality.assertiveness, 2), 10), 1)
+    )
