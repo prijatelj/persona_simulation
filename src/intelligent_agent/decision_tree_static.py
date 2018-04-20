@@ -95,9 +95,6 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
         # static response:
         # if greeting in middle of conversation either ignore or question it.
         #   perhaps respond confused.
-        if topic_is_self(last_utterance.topic) \
-                or topic_is_user(last_utterance.topic):
-            return tactic.psychiatrist(last_utterance, chatbot.name)
 
 
         if change_topic(mood_magnitude, topic_magnitude,
@@ -110,20 +107,16 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
                     mood_magnitude, topic_magnitude, personas)
 
         else: # Stay on topic
+            if topic_is_self(last_utterance.topic) \
+                    or topic_is_user(last_utterance.topic):
+                return tactic.psychiatrist(last_utterance, chatbot.name)
+
             if respond_passively(chatbot, user, mood_magnitude):
                 return stay_on_topic_passive(conversation, chatbot, user,
                     mood_magnitude, topic_magnitude, personas)
             else: # respond assertively
                 return stay_on_topic_assertive(conversation, chatbot, user,
                     mood_magnitude, topic_magnitude, personas)
-
-def psych():
-    # Placeholder for now, will put w/in hierarchy where necessary.
-    #TODO psychiatrist for self_user only, not self_bot.
-    # only really fits when stay on topic. Maybe if change topic to user too?
-    if topic_is_self(last_utterance.topic) \
-            or topic_is_user(last_utterance.topic):
-        return tactics.psychiatrist(last_utterance, chatbot_id)
 
 def change_topic(mood_magnitude, topic_magnitude, chatbot):
     # if topic magnitude is far from desired, (and is mood_magnitude) change
@@ -140,7 +133,7 @@ def respond_passively(chatbot, user, mood_magnitude):
     # TODO can calculate how much desire to be assertive based on chatbot & user
     # ie. can play off user's own assertiveness to complement it.
     # TODO mood may be affected by chatbot's assertiveness, esp. if deemed rude.
-    return chatbot.personality.assertiveness > 5
+    return chatbot.personality.assertiveness < 5
 
 
 # TODO have random select, have it be a skewed normal, and mean wherever
@@ -195,7 +188,7 @@ def change_topic_assertive(conversation, chatbot, user, mood_magnitude,
 
 def stay_on_topic_passive(conversation, chatbot, user, mood_magnitude,
         topic_magnitude, personas):
-
+    choice = np.random.choice(3,1)
     # Listening oriented
 
     # Reinforce passively, "me too", "interesting."
