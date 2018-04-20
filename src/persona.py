@@ -55,6 +55,15 @@ class Personality(object):
             "assertiveness: ", self.assertiveness, "\n"
         )
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, Personality)
+            and self.__mood == other.__mood
+            and self.__assertiveness == other.__assertiveness
+        )
+
+    # Personality is mutable: not hashable by python standards
+
 class Persona(object):
     """ Defines a Persona of a participant in the conversation. """
     # TODO add history of Personality dict of {turn count, Personality}
@@ -185,3 +194,13 @@ class Persona(object):
                 print(ts, "\n")
         else:
             print(None)
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, Persona)
+            and self.__name == other.__name
+            and self.__personality == other.__personality
+            and self.__topic_sentiment == other.__topic_sentiment
+        )
+
+    # Persona is mutable: not hashable by python standards
