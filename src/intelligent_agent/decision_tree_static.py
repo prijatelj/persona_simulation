@@ -39,8 +39,8 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
     # static reactions:
     if last_utterance.dialogue_act == DA.farewell:
         return Utterance(
-            chatbot_id,
-            DialogueAct.farewell,
+            chatbot.name,
+            DA.farewell,
             "self_user",
             chatbot.personality.mood,
             chatbot.personality.assertiveness
@@ -48,6 +48,7 @@ def decision_tree_static(conversation, chatbot, user, personas=None):
 
 
     # TODO add ability to reference previous conversations for returning users
+    # This is now doable through ConversationHistory objects
     if len(conversation.topic_to_utterances.keys()) <= 1:
         # New conversation started
         #tactic.query()
