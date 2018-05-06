@@ -17,6 +17,7 @@ from datetime import datetime
 from enum import Enum
 from functools import total_ordering
 import copy
+import json
 #from sortedcontainers import SortedSet
 
 class DialogueAct(Enum):
@@ -271,6 +272,19 @@ class Utterance(object):
             other.__question_type
         ))
 
+    # TODO is this improper usage? missing __objclass__?
+    def __dict__(self):
+        return {
+            "speaker": self.__speaker,
+            "dialogue_act": vars(self.__dialogue_act),
+            "topic": self.__topic,
+            "sentiment": self.__sentiment,
+            "assertiveness": self.__assertiveness,
+            "text": self.__text,
+            "question_type": vars(self.__question_type),
+            "date_time": self.__date_time
+        }
+
 class Conversation(object):
     """ A representation of a single conversation """
     def __init__(self, participants=set(), utterances=OrderedDict(),
@@ -340,12 +354,14 @@ class Conversation(object):
 
     def __str__(self):
         s = "Utterances:\n"
-        for u in self.utterances:
+        for u in self.__utterances:
             s += str(u)
 
         s += "\nParticipants:\n"
-        for p in self.participants:
+        for p in self.__participants:
             s += str(p)
+
+        return s
 
     def __repr__(self):
         return self.__str__()
@@ -374,6 +390,13 @@ class Conversation(object):
 
     # Conversation is mutable, therefore not hashable by Python standards
 
+    def __dict__(self):
+        return {
+            "participants": self.__participants,
+            "utterances": self.__utterances,
+            "topic_to_utterances": self.__topic_to_utterances
+        }
+
 class ConversationHistory(object):
     """ A history of conversations between participants and associated data """
     def __init__(self, conversations=OrderedDict(),
@@ -386,9 +409,7 @@ class ConversationHistory(object):
         self.__conversations = conversations
 
         if topic_to_conversations is None:
-            self.__topic_to_conversations = {}
-            for k,u in conversations.items():
-                self.__add_conversation_to_topic(u, k)
+            self.create_topic_to_conversations()
         else:
             assert(isinstance(topic_to_conversations, dict))
             self.__topic_to_conversations = topic_to_conversations
@@ -436,15 +457,24 @@ class ConversationHistory(object):
 
     # TODO update_conversation_to_topic(self): update if conversations include new topics
 
-    # TODO to_string(self): make string of dict version.
-    def print_out(self):
-        print("Conversations:\n")
-        for c in self.conversations:
-            c.print_out()
+    def create_topic_to_conversations(self):
+        """ Helper function to create the topic_to_conversations dictionary """
+        self.__topic_to_conversations = {}
+        for k,u in self.__conversations.items():
+            self.__add_conversation_to_topic(u, k)
 
     # TODO
     def topic_to_conversations_to_string(self):
         return
+
+    def __str__(self):
+        s = "Conversations:\n"
+        for convo in self.conversations:
+            s += str(convo)
+        return s
+
+    def __repr__(self):
+        return self.__str__()
 
     def __copy__(self):
         return ConversationHistory(
@@ -456,3 +486,41 @@ class ConversationHistory(object):
         return self.__copy__()
 
     # ConversationHistory is mutable, therefore not hashable by Python standards
+
+    def __dict__(self):
+        return{
+            "conversations": self.__conversations,
+            "topic_to_conversations": self.__topic_to_conversations
+        }
+
+    # TODO This extract_dict does not match that in Persona.py. Make them same
+    def extract_dict(self, ch_dict):
+        """
+        Extracts the Conversation History from the provided dict,
+        overwriting existing data.
+        """
+        # TODO make extract dict overwrite the ConversationHistory's data
+        self.__conversations = ch_dict["conversations"]
+        if "topic_to_conversations" in ch_dict.keys():
+            topic_to_conversations = ch_dict["topic_to_conversations"]
+        else:
+            self.create_topic_to_conversations()
+
+
+    def save_json(self, json_output_path):
+        """ Save Conversation History as JSON at provided path """
+        with open(json_output_path, 'w', encoding='utf-8') as json_output:
+            json.dump(
+                {"conversation_history":vars(self)},
+                json_output,
+                ensure_ascii=False,
+                indent=4,
+                sort_keys=True
+            )
+
+    # TODO implement constructor with only str json path
+    def load_json(self, json_path):
+        """ Loads the ConversationHistory.json, overwrites existing data """
+        with open(json_path, encoding='utf-8') as json_conversation_history:
+            dict_conversation_history = json.load(json_conversation_history)
+            self.extract_dict(dict_conversation_history)
