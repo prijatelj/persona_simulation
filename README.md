@@ -57,3 +57,13 @@ Requirements
 - Numpy
 - Scikit-Learn
 - NLTK
+
+__
+TODO
+==
+After the proof of concept version (0.1):
+- Decide if JSON or YAML is better for Personality Profiles.
+    + YAML much easier to read(how certain?) and __write__ (ensure this difference is great enough to warrant a change)
+    + JSON is a standard (pointless point in itself without reasoning) and is known for its speed, if YAML can  be read as efficiently as JSON, then use YAML, esp. given the readability and writability of YAML over JSON.
+    + May end up using YAML for Personality Profiles, but JSON for Conversations, and Conversation Histories, because it only needs serialized and stored, not edited by humans.
+    + (could use JSON entirely, if a GUI/CLI was made to edit and create Personality Profiles, but thats more overhead than may be necessary)
