@@ -11,6 +11,7 @@ persona in conversation.
 
 from collections import OrderedDict
 from datetime import datetime
+import copy
 import json
 
 class Personality(object):
@@ -37,17 +38,6 @@ class Personality(object):
     def set_assertiveness(self, assertiveness):
         self.__assertiveness = assertiveness
 
-    def get_dict(self):
-        """
-        Returns dict of Personality for easy saving and addition to Personality
-        Profile.
-        """
-        return {"personality":
-                    {"mood" : self.__mood,
-                     "assertiveness": self.__assertiveness
-                    }
-               }
-
     def print_out(self):
         print(
             "Personality:\n",
@@ -63,6 +53,18 @@ class Personality(object):
         )
 
     # Personality is mutable: not hashable by python standards
+
+    def __dict__(self):
+        return {
+            "mood" : self.__mood,
+            "assertiveness": self.__assertiveness
+        }
+
+    def __copy__(self):
+        return Personality(
+            self.mood,
+            self.assertiveness,
+        )
 
 class Persona(object):
     """ Defines a Persona of a participant in the conversation. """
@@ -83,7 +85,7 @@ class Persona(object):
     def __init__(self, *args):
         if len(args) == 1:
             if isinstance(args[0], dict):
-                name, personality, topic_sentiment = self.extract_profile_dict(
+                name, personality, topic_sentiment = self.extract_dict(
                     args[0]
                 )
             elif isinstance(args[0], str):
@@ -141,35 +143,7 @@ class Persona(object):
         else:
             return None
 
-    def save_personality_profile(self, path_output_json):
-        """ store personality profile (prototype's persona) into json """
-        with open(path_output_json, 'w', encoding='utf-8') as json_output:
-            # create dictionary structure of Personality Profile first:
-            profile = dict()
-
-            # create intricate parts if necessary
-            name = {"name":self.name}
-            personality = self.personality.get_dict()
-            # TODO add philosophy part
-            preferences = {"preferences": self.topic_sentiment}
-            # TODO add explicit preferences
-
-            content = [name, personality, preferences]
-
-            # Then save all into final profile
-            profile["personality profile"] = {
-                key:value for d in content for key, value in d.items()
-            }
-
-            json.dump(
-                profile,
-                json_output,
-                ensure_ascii=False,
-                indent=4,
-                sort_keys=True
-            )
-
-    def extract_profile_dict(self, profile_dict):
+    def extract_dict(self, profile_dict):
         name = profile_dict["personality profile"]["name"]
         personality = Personality(
             profile_dict["personality profile"]["personality"]["mood"],
@@ -179,11 +153,22 @@ class Persona(object):
 
         return name, personality, topic_sentiment
 
-    def load_personality_profile(self, path_to_json):
+    def save_json(self, json_output_path):
+        """ store personality profile (prototype's persona) into JSON """
+        with open(json_output_path, 'w', encoding='utf-8') as json_output:
+            json.dump(
+                {"personality_profile":vars(self)},
+                json_output,
+                ensure_ascii=False,
+                indent=4,
+                sort_keys=True
+            )
+
+    def load_json(self, json_path):
         """ given a file path, loads the personality profile from json. """
-        with open(path_to_json, encoding='utf-8') as json_personality:
+        with open(json_path, encoding='utf-8') as json_personality:
             profile_dict = json.load(json_personality)
-            return self.extract_profile_dict(profile_dict)
+            return self.extract_dict(profile_dict)
 
     def print_out(self):
         print("Name: ", self.name, "\n")
@@ -204,3 +189,19 @@ class Persona(object):
         )
 
     # Persona is mutable: not hashable by python standards
+
+    def __dict__(self):
+        return {
+            "name": self.__name,
+            "personality": vars(self.__personality)
+            "preferences": self.__topic_sentiment
+        }
+        # TODO add philosophy part
+        # TODO add explicit preferences
+
+    def __copy__(self):
+        return Persona(
+            self.name,
+            self.personality,
+            self.topic_sentiment
+        )
