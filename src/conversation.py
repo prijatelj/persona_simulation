@@ -120,6 +120,20 @@ def topic_is_user(topic):
     """ Check if the topic is about the user. """
     return topic in {"me", "myself", "self_user"}
 
+# TODO split conversation.py into utterance.py, conversation.py, conversation_history.py, where the general helpr functions above are in the utterance.py. The below functions will be in conversation or conversation history
+
+def find_conversation_histsory(personas, path="../data/conversation_logs/"):
+    """
+    Finds list of all existing conversation histories with all involved personas.
+
+    :param personas: set of persona ids.
+    :return: list of ConversationHistorys where all personas are involved,
+        unless  if set of personas are not included in any ConversationHistory,
+        then None is returned.
+    """
+    #TODO implement an actual Data Base that lets you find by persona ids.
+    return None
+
 @total_ordering
 class Utterance(object):
     """
@@ -516,6 +530,9 @@ class ConversationHistory(object):
 
     def save_json(self, json_output_path):
         """ Save Conversation History as JSON at provided path """
+        # TODO add unique name to each ConversationHistory when saved including:
+        # str(date_time) + "_" + str(personas)
+        #conversation_history_id = str(participants)
         with open(json_output_path, 'w', encoding='utf-8') as json_output:
             json.dump(
                 {"conversation_history":vars(self)},
