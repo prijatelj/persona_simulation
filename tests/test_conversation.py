@@ -2,12 +2,60 @@
 Tests all related to the conversation files.
 """
 
+from copy import copy
 from src.conversation import DialogueAct as DA, QuestionType, \
     Utterance, Conversation, ConversationHistory, \
     is_statement, is_question, is_response_action, is_backchannel, \
     statement_to_question, question_to_statement, topic_is_self, topic_is_user
 
 class TestGeneralFunctions(object):
+    def test_dialogue_acts_names(self):
+        """ Confirms that the dialogue acts are named as expected. """
+        da_names = [da.name for da in DA]
+        assert 'statement' in da_names
+        assert 'statement_information' in da_names
+        assert 'statement_experience' in da_names
+        assert 'statement_preference' in da_names
+        assert 'statement_opinion' in da_names
+        assert 'statement_desire' in da_names
+        assert 'statement_plan' in da_names
+
+        assert 'question' in da_names
+        assert 'question_information' in da_names
+        assert 'question_experience' in da_names
+        assert 'question_preference' in da_names
+        assert 'question_opinion' in da_names
+        assert 'question_desire' in da_names
+        assert 'question_plan' in da_names
+
+        assert 'response_action' in da_names
+        assert 'greeting' in da_names
+        assert 'farewell' in da_names
+        assert 'thanks' in da_names
+        assert 'apology' in da_names
+        assert 'confirm' in da_names
+        assert 'disconfirm' in da_names
+        assert 'agreement' in da_names
+        assert 'disagreement' in da_names
+        assert 'silence' in da_names
+
+        assert 'backchannel' in da_names
+        assert 'request_confirmation' in da_names
+        assert 'request_clarification' in da_names
+        assert 'repeat' in da_names
+        assert 'paraphrase' in da_names
+
+        assert 'other' in da_names
+
+    def test_question_type_names(self):
+        qt_names = [q.name for q in QuestionType]
+        assert 'polar' in qt_names
+        assert 'declarative' in qt_names
+        assert 'wh' in qt_names
+        assert 'open_ended' in qt_names
+        assert 'rhetorical' in qt_names
+        assert 'other' in qt_names
+
     def test_is_statement(self):
         assert is_statement(DA.statement)
         assert is_statement(DA.statement_information)
@@ -107,5 +155,39 @@ class TestGeneralFunctions(object):
         assert topic_is_user("myself")
         assert topic_is_user("self_user")
 
-#class TestUtterance(object):
+class TestUtterance(object):
 
+    def test_copy(self):
+        utterance = Utterance(
+            "test_speaker",
+            DA.statement_information,
+            "test",
+            5,
+            5,
+            "This is a test."
+        )
+        utterance_copy = copy(utterance)
+        assert utterance == utterance_copy and utterance is not utterance_copy
+
+        utterance_copy = utterance.copy()
+        assert utterance == utterance_copy and utterance is not utterance_copy
+
+        utterance = Utterance(
+            "test_speaker",
+            DA.question_information,
+            "test",
+            5,
+            5,
+            "This is a test?",
+            QuestionType.polar
+        )
+        utterance_copy = copy(utterance)
+        assert utterance == utterance_copy and utterance is not utterance_copy
+
+        utterance_copy = utterance.copy()
+        assert utterance == utterance_copy and utterance is not utterance_copy
+
+    # TODO test the properties to see if they are copies or the actual objects.
+    #def test_properties
+
+# TODO test Conversation and ConversationHistory on json save/load
