@@ -90,7 +90,7 @@ class Persona(object):
                 )
             elif isinstance(args[0], str):
                 name, personality, topic_sentiment = \
-                    self.load_personality_profile(args[0])
+                    self.load_json(args[0])
         elif len(args) >= 2 and len(args) <= 4:
             name = args[0]
             personality = Personality(args[1], args[2])
@@ -193,7 +193,7 @@ class Persona(object):
     def __dict__(self):
         return {
             "name": self.__name,
-            "personality": vars(self.__personality)
+            "personality": vars(self.__personality),
             "preferences": self.__topic_sentiment
         }
         # TODO add philosophy part
