@@ -26,9 +26,12 @@ def main():
         simulated_persona.name:simulated_persona
     }
 
+    # TODO Actually implement ConversationHistory, rather than one conversation
     conversation_history = Conversation(
         {user_persona.name, simulated_persona.name}
     )
+
+    # TODO check if there exists a conversation history between the user and bot
 
     ongoing_conversation = True
     while ongoing_conversation:
