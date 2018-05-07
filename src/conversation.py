@@ -205,6 +205,7 @@ class Utterance(object):
 
     def __str__(self):
         return (
+            "Utterance:\n" +
             "Speaker: " + self.speaker + "\n" +
             "Topic: " + self.topic + "\n" +
             "Dialogue Act: " + str(self.dialogue_act) + "\n" +
