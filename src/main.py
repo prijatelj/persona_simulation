@@ -52,7 +52,7 @@ def main():
         # Simulated Personality must determine how to respond and what to say
         # This is mostly outside of NLG, although the what to say part somewhat
         # overlaps with NLG task of content determination.
-        response_metadata = intelligent_agent.decide_response(
+        response_utterance = intelligent_agent.decide_response(
             conversation_history,
             simulated_persona.name,
             persona_dict
@@ -75,7 +75,7 @@ def main():
         # update conversation history
         conversation_history.add_utterance(response_utterance)
 
-        if response_metadata.dialogue_act == DialogueAct.farewell:
+        if response_utterance.dialogue_act == DialogueAct.farewell:
             ongoing_conversation = False
 
     # TODO Save conversation history log in "database" appropriately.

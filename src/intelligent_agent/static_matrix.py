@@ -18,6 +18,7 @@ from intelligent_agent import tactic
 from conversation import DialogueAct as DA, QuestionType, \
     Utterance, is_question, is_statement, \
     topic_is_self, topic_is_user, question_to_statement, statement_to_question
+from nlg import nlg
 
 def static_matrix(conversation, chatbot, user, personas=None):
     """
