@@ -27,15 +27,18 @@ def nlu_cli(default_mood, user_id):
     while mood not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
         mood = input(
             "Enter your current mood on a scale of 1 to 10 where "
-            + "1 is negative, 5 is neutral, and 10 is positive: "
+            + "1 is negative, 5 is neutral, and 10 is positive (default is "
+            + str(default_mood) + "): "
         )
-        if mood == "":
+        if mood == "" or not mood.isdigit():
             mood = default_mood
         else:
             mood = int(mood)
         mood = default_mood if mood == "" else int(mood)
 
-    topic = input("Enter Topic: ").strip().lower()
+    topic = ""
+    while topic == "":
+        topic = input("Enter Topic: ").strip().lower()
 
     #loop until they select correct dialogue act, show help after first fail
     dialogue_act = ""
