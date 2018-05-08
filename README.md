@@ -58,9 +58,19 @@ Requirements
 - Scikit-Learn
 - NLTK
 
-____
+Usage
+--
+Inside src:
+    python main.py [path/to/personality_profile]
+
+For example to run the default neutral personality profile:
+    python main.py ../data/personality_profiles/neutral.json
+
 TODO
 ==
+ASAP:
+- Unit Test. Do them. Do ALL of them.
+
 After the proof of concept version (0.1):
 - Decide if JSON or YAML is better for Personality Profiles.
     + YAML much easier to read(how certain?) and __write__ (ensure this difference is great enough to warrant a change)
