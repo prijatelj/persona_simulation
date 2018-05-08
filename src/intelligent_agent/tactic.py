@@ -96,7 +96,7 @@ def psychiatrist(utterance, responder_id):
     """ Use ELIZA to generate response utterances when the topic is on user. """
     return Utterance(
         responder_id,
-        DialogueAct.other,
+        DA.other,
         "self_user",
         5,
         5,

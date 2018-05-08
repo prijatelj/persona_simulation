@@ -9,7 +9,7 @@ methods, and optimization methods.
 :author: Derek S. Prijatelj
 """
 
-from conversation import DialogueAct, Utterance, \
+from conversation import DialogueAct as DA, Utterance, \
     is_statement, is_question, is_response_action, is_backchannel, \
     topic_is_self, topic_is_user
 from nlg.nlg import generate_response_text #TODO remove , run in src dir.
@@ -56,22 +56,22 @@ def decide_response(conversation_history, chatbot_id, persona_dict):
     #return decision_tree_static(conversation_history, chatbot, user, persona_dict)
 
     # static reactions:
-    if last_utterance.dialogue_act == DialogueAct.farewell:
+    if last_utterance.dialogue_act == DA.farewell:
         return Utterance(
             chatbot_id,
-            DialogueAct.farewell,
+            DA.farewell,
             "self_user",
             chatbot.personality.mood,
             chatbot.personality.assertiveness
         )
-    #elif last_utterance.dialogue_act == DialogueAct.greeting:
+    #elif last_utterance.dialogue_act == DA.greeting:
     #    return Utterance(
     #        chatbot_id,
-    #        DialogueAct.greeting,
+    #        DA.greeting,
     #        "self_user",
     #        chatbot.personality.mood,
     #        chatbot.personality.assertiveness
     #    )
 
     # TODO remove this, this is just to stop code from crashing until IA finished
-    return Utterance(chatbot_id, DialogueAct.other, "None", 5, 5)
+    return Utterance(chatbot_id, DA.other, "None", 5, 5)

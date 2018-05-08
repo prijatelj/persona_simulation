@@ -9,7 +9,7 @@ persona's personality.
 """
 from datetime import datetime
 from random import choice, getrandbits
-from conversation import QuestionType
+from conversation import QuestionType as QT
 from nlg import insult
 
 def greeting(persona, conversation, sentiment=None, formal=None):
@@ -180,9 +180,9 @@ def question_experience(persona, conversation, sentiment=None, formal=None, topi
 
 def question_preference(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
-    if question_type == QuestionType.polar:
+    if question_type == QT.polar:
         neutral = ["do you have a preference on " + topic]
-    else: # elif question_type == QuestionType.wh:
+    else: # elif question_type == QT.wh:
         neutral = ["what is your preference on " + topic]
         neg = ["what is your " + negative_adj(formal) + " preference on "
             + topic]
@@ -190,9 +190,9 @@ def question_preference(persona, conversation, sentiment=None, formal=None, topi
 
 def question_opinion(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
-    if question_type == QuestionType.polar:
+    if question_type == QT.polar:
         neutral = ["do you have a opinion on " + topic]
-    else: # elif question_type == QuestionType.wh:
+    else: # elif question_type == QT.wh:
         neutral = ["what is your opinion on " + topic]
         neg = ["what is your " + negative_adj(formal) + " opinion on " + topic]
 
@@ -205,7 +205,7 @@ def question_desire(persona, conversation, sentiment=None, formal=None, topic="t
             "what are your wants",
             "what are your desires"
         ]
-        if question_type == QuestionType.polar:
+        if question_type == QT.polar:
             neg = ["is there something you want"]
         else:
             neg = ["what do you want"]

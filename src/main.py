@@ -5,7 +5,7 @@ Main interface to test/run the simulation.
 """
 from nlu.nlu_cli import nlu_cli, parse_args
 from persona import Persona
-from conversation import Conversation, DialogueAct
+from conversation import Conversation, DialogueAct as DA
 from intelligent_agent import intelligent_agent
 from nlg import nlg
 
@@ -75,7 +75,7 @@ def main():
         # update conversation history
         conversation_history.add_utterance(response_utterance)
 
-        if response_utterance.dialogue_act == DialogueAct.farewell:
+        if response_utterance.dialogue_act == DA.farewell:
             ongoing_conversation = False
 
     # TODO Save conversation history log in "database" appropriately.

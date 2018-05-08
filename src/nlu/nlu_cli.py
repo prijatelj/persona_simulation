@@ -18,7 +18,7 @@ TODO: Switch from Python to C++ or Cython or Java.
 
 import argparse
 from persona import Persona
-from conversation import DialogueAct, QuestionType, Utterance, \
+from conversation import DialogueAct as DA, QuestionType as QT, Utterance, \
     Conversation, is_question
 
 def nlu_cli(default_mood, user_id):
@@ -40,7 +40,7 @@ def nlu_cli(default_mood, user_id):
     #loop until they select correct dialogue act, show help after first fail
     dialogue_act = ""
     first = True
-    da_names = [da.name for da in DialogueAct if da.name not in
+    da_names = [da.name for da in DA if da.name not in
         ['statement', 'question', 'response_action']
     ]
     while dialogue_act not in da_names:
@@ -53,10 +53,10 @@ def nlu_cli(default_mood, user_id):
             print("Enter a dialogue act from list below:\n", da_names)
 
     question_type = None
-    if is_question(DialogueAct[dialogue_act]):
+    if is_question(DA[dialogue_act]):
         question_type = ""
         first = True
-        question_types = [qt.name for qt in QuestionType]
+        question_types = [qt.name for qt in QT]
         while question_type not in question_types:
             question_type = input("Enter question type: ").strip().lower()
 
@@ -90,7 +90,7 @@ def nlu_cli(default_mood, user_id):
 
     return Utterance(
             user_id,
-            DialogueAct[dialogue_act],
+            DA[dialogue_act],
             topic,
             sentiment,
             assertiveness,
@@ -159,7 +159,7 @@ def main():
         print("output user_persona.mood updated\n")
         user_persona.print_out()
 
-        if utterance.dialogue_act == DialogueAct.farewell:
+        if utterance.dialogue_act == DA.farewell:
             ongoing_conversation = False
 
 if __name__ == "__main__":
