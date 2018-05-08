@@ -2,8 +2,10 @@
 The tactics used in maintaining the conversation.
 """
 
+import random
 from nltk.chat.eliza import eliza_chatbot
-from conversation import Utterance, DialogueAct
+from conversation import Utterance, DialogueAct as DA, QuestionType as QT
+from nlg import generic_response
 
 """
 Tactics:
@@ -32,9 +34,39 @@ def query_topics(simulation, user, conversation_history, mood_magnitude):
     """
     return
 
-def query_user_general():
-    """ General questions of user to find a topic of discussion. """
-    return
+# TODO add assertiveness parameter
+def query_user_general(conversation, chatbot, user, personas=None,
+        sentiment=None, formal=None):
+    """
+    General questions of user to find a topic of discussion.
+    :param sentiment: Inferred sentiment from chatbot, unless explicitly given
+    :param formal: Inferred formality from chatbot, unless explicitly given
+    """
+    if sentiment is None:
+        sentiment = chatbot.personality.mood
+
+    da = random.choice([DA.question_experience, DA.question_information])
+
+    text = generic_response.query_user_information(
+            persona,
+            conversation,
+            sentiment
+        ) if da is DA.question_information else \
+        generic_response.query_user_experience(
+            persona,
+            conversation,
+            sentiment
+        )
+
+    utterance = Utterance(
+        chatbot.name,
+        da,
+        "self_user",
+        sentiment,
+        chatbot.personality.assertiveness,
+        text
+    )
+    return utterance
 
 def query_user_specific():
     """ Ask user to select a subtopic of a topic. """
@@ -61,7 +93,7 @@ def joke():
     return
 
 def psychiatrist(utterance, responder_id):
-    """ Use ELIZA to generate respons eutterances when the topic is on user. """
+    """ Use ELIZA to generate response utterances when the topic is on user. """
     return Utterance(
         responder_id,
         DialogueAct.other,
