@@ -61,9 +61,11 @@ Requirements
 Usage
 --
 Inside src:
+
     python main.py [path/to/personality_profile]
 
 For example to run the default neutral personality profile:
+
     python main.py ../data/personality_profiles/neutral.json
 
 TODO
