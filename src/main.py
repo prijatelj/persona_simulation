@@ -18,17 +18,17 @@ def main():
 
     # Create both Personas for the user and the system
     user_persona = Persona(username, mood, 5)
-    simulated_persona = args.personality_profile
+    chatbot = args.personality_profile
 
     # personality dict:
     persona_dict = {
         user_persona.name:user_persona,
-        simulated_persona.name:simulated_persona
+        chatbot.name:chatbot
     }
 
     # TODO Actually implement ConversationHistory, rather than one conversation
     conversation_history = Conversation(
-        {user_persona.name, simulated_persona.name}
+        {user_persona.name, chatbot.name}
     )
 
     # TODO check if there exists a conversation history between the user and bot
@@ -52,10 +52,11 @@ def main():
         # Simulated Personality must determine how to respond and what to say
         # This is mostly outside of NLG, although the what to say part somewhat
         # overlaps with NLG task of content determination.
+
         try:
             response_utterance = intelligent_agent.decide_response(
                 conversation_history,
-                simulated_persona.name,
+                chatbot.name,
                 persona_dict
             )
         except:
@@ -70,7 +71,7 @@ def main():
 
         # call NLG module to generate actual text, if needed.
         #response_utterance = nlg.generate_response_text(
-        #    response_metadata, simulated_persona, conversation_history) \
+        #    response_metadata, chatbot, conversation_history) \
         #        if response_metadata.text is None else response_metadata
 
         print(response_utterance)
