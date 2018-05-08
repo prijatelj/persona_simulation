@@ -55,7 +55,7 @@ Requirements
 --
 - Python 3+
 - Numpy
-- Scikit-Learn
+- Scikit-Learn (not currently needed, but will be in future?)
 - NLTK
 
 Usage
