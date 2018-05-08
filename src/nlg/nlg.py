@@ -29,6 +29,12 @@ def generate_response_text(utterance_metadata, persona, conversation):
     else:
         text = other(utterance_metadata, persona, conversation)
 
+    if text != '' and utterance_metadata.sentiment <= 1:
+        insult = generic_response.insult_gen()
+        text = text + ' ' + insult[0].upper() + insult[1:]
+
+        text = text+'!' if utterance_metadata.assertiveness >= 9 else text+'.'
+
     # TODO returning the utterance object may be unnecessary, given set_text()
     return text
 

@@ -1,10 +1,10 @@
 ,statement_information,statement_experience,statement_preference,statement_opinion,statement_desire,statement_plan,question_information,question_experience,question_preference,question_opinion,question_desire,question_plan,greeting,farewell,thanks,apology,confirm,disconfirm,agreement,disagreement,silence,backchannel,request_confirmation,request_clarification,repeat,paraphrase,other
-statement_information,3,4,4,5,4,3,9,3,3,3,3,3,0,0,4,3,5,5,5,5,4,7,7,7,7,7,0
-statement_experience,4,3,4,4,4,4,3,9,3,3,3,3,0,0,4,3,5,5,5,5,4,7,7,7,7,7,0
-statement_preference,4,4,4,4,4,4,3,3,9,3,3,3,0,0,4,3,5,5,5,5,4,7,7,7,7,7,0
-statement_opinion,4,4,4,4,4,4,3,3,3,9,3,3,0,0,4,3,5,5,5,5,4,7,7,7,7,7,0
-statement_desire,4,4,4,3,4,4,3,3,3,3,9,3,0,0,4,3,5,5,5,5,4,7,7,7,7,7,0
-statement_plan,3,3,3,3,3,3,3,3,3,3,3,9,0,0,4,3,5,5,5,5,3,7,7,7,7,7,0
+statement_information,3,4,4,5,4,3,7,3,3,3,3,3,0,0,4,3,5,5,5,5,4,7,7,7,7,7,0
+statement_experience,4,3,4,4,4,4,3,7,3,3,3,3,0,0,4,3,5,5,5,5,4,7,7,7,7,7,0
+statement_preference,4,4,4,4,4,4,3,3,7,3,3,3,0,0,4,3,5,5,5,5,4,7,7,7,7,7,0
+statement_opinion,4,4,4,4,4,4,3,3,3,7,3,3,0,0,4,3,5,5,5,5,4,7,7,7,7,7,0
+statement_desire,4,4,4,3,4,4,3,3,3,3,7,3,0,0,4,3,5,5,5,5,4,7,7,7,7,7,0
+statement_plan,3,3,3,3,3,3,3,3,3,3,3,7,0,0,4,3,5,5,5,5,3,7,7,7,7,7,0
 question_information,9,7,7,7,7,7,4,4,4,4,4,4,4,0,8,7,7,7,6,6,9,4,4,4,4,4,0
 question_experience,7,9,7,7,7,7,4,4,4,4,4,4,4,0,8,7,7,7,6,6,9,4,4,4,4,4,0
 question_preference,7,7,9,7,7,7,4,4,4,4,4,4,4,0,8,7,7,7,6,6,9,4,4,4,4,4,0

@@ -150,7 +150,10 @@ def question_information(persona, conversation, sentiment=None, formal=None, top
     neutral = ["tell me more", "inform me on " + topic]
     pos = ["please", "could you"]
     pos = [s1 + " " + s2 for s1 in pos for s2 in neutral]
-    neg = ["what else is there on " + topic]
+    neg = [
+        "what else is there on " + topic,
+        "tell me more " + negative_adj(formal) + " garbage on " + topic
+    ]
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 def question_experience(persona, conversation, sentiment=None, formal=None, topic="that",
@@ -218,7 +221,7 @@ def question_plan(persona, conversation, sentiment=None, formal=None, topic="tha
         question_type=None):
     #if topic == "general" or topic == "self_user":
     neutral = ["what are your plans"]
-    neg = ["what are your" + negative_adj(formal) + " plans"]
+    neg = ["what are your " + negative_adj(formal) + " plans"]
     return sentiment_select(persona, sentiment, neutral, neg=neg)
 
 def statement_information(persona, conversation, sentiment=None, formal=None, topic="that",
