@@ -1,7 +1,9 @@
 """
 Tests all related to the conversation files.
 """
-
+# TODO fix the testing relative paths.
+# src is not a package, this is broken... should probably make project a package
+# then load it in virtual env to test it.
 from copy import copy
 from src.conversation import DialogueAct as DA, QuestionType, \
     Utterance, Conversation, ConversationHistory, \

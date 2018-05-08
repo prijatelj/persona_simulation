@@ -58,10 +58,17 @@ def main():
             persona_dict
         )
 
+        # TODO ensure NLG expects meta text!
+        #   TODO OR, make it so IA's tactics create the text.
+        # Utterance text should never be none, it will instead be a string of
+        # keywords for tactics to fill in their place.
+        #   ie. greeting username, question_experience ?
+        #       = "Hello Bob, how was your day?"
+
         # call NLG module to generate actual text, if needed.
-        response_utterance = nlg.generate_response_text(
-            response_metadata, conversation_history, simulated_persona) \
-                if response_metadata.text is None else response_metadata
+        #response_utterance = nlg.generate_response_text(
+        #    response_metadata, simulated_persona, conversation_history) \
+        #        if response_metadata.text is None else response_metadata
 
         print(response_utterance)
 

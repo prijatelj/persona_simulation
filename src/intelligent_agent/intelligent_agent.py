@@ -14,6 +14,7 @@ from conversation import DialogueAct, Utterance, \
     topic_is_self, topic_is_user
 from nlg.nlg import generate_response_text #TODO remove , run in src dir.
 from intelligent_agent.decision_tree_static import decision_tree_static
+from intelligent_agent.static_matrix import static_matrix
 
 _standard_topic = {
     "self_user",
@@ -49,7 +50,10 @@ def decide_response(conversation_history, chatbot_id, persona_dict):
     )
     # TODO give first utterance, should never occur in prototype
 
-    return decision_tree_static(conversation_history, chatbot, user, persona_dict)
+
+    return static_matrix(conversation_history, chatbot, user, persona_dict)
+
+    #return decision_tree_static(conversation_history, chatbot, user, persona_dict)
 
     # static reactions:
     if last_utterance.dialogue_act == DialogueAct.farewell:

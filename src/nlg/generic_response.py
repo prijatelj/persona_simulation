@@ -12,7 +12,7 @@ from random import choice, getrandbits
 from conversation import QuestionType
 from nlg import insult
 
-def greeting(persona, sentiment=None, formal=None):
+def greeting(persona, conversation, sentiment=None, formal=None):
     """ Given persona, selects appropriate response. """
     neutral_formal = ["hello", "greetings"]
     neutral_informal = ["hi", "hey", "hey there"]
@@ -34,7 +34,7 @@ def greeting(persona, sentiment=None, formal=None):
 
     return sentiment_select(persona, sentiment, neutral, pos)
 
-def farewell(persona, sentiment=None, formal=None):
+def farewell(persona, conversation, sentiment=None, formal=None):
     neutral_formal = ["goodbye", "farewell"]
     neutral_informal = ["bye", "later", "see you later", "talk to you later",
         "so long", "until next time"]
@@ -61,7 +61,7 @@ def farewell(persona, sentiment=None, formal=None):
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def agreement(persona, sentiment=None, formal=None):
+def agreement(persona, conversation, sentiment=None, formal=None):
     neutral = ["I agree", "I agree with you"]
     pos = ["definitely", "absolutely"]
     neg = ["I suppose I agree", "I suppose I agree with you",
@@ -69,7 +69,7 @@ def agreement(persona, sentiment=None, formal=None):
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def disagreement(persona, sentiment=None, formal=None):
+def disagreement(persona, conversation, sentiment=None, formal=None):
     neutral = ["I disagree", "I disagree with you"]
     pos = ["I definitely disagree", "I absolutely disagree"]
     neg = ["I suppose I disagree", "I suppose I disagree with you",
@@ -77,7 +77,7 @@ def disagreement(persona, sentiment=None, formal=None):
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def confirm(persona, sentiment=None, formal=None):
+def confirm(persona, conversation, sentiment=None, formal=None):
     neutral_formal = ["yes"]
     neutral_informal = ["yeah", "okay"] # uh-huh mm-hmm??
     pos = ["absolutely, yes", "definitely, yes", "definitely, yes"]
@@ -87,7 +87,7 @@ def confirm(persona, sentiment=None, formal=None):
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def disconfirm(persona, sentiment=None, formal=None):
+def disconfirm(persona, conversation, sentiment=None, formal=None):
     neutral_formal = ["no"]
     neutral_informal = ["nah"]
     pos = ["unfortunately, no"]
@@ -97,7 +97,7 @@ def disconfirm(persona, sentiment=None, formal=None):
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def thanks(persona, sentiment=None, formal=None):
+def thanks(persona, conversation, sentiment=None, formal=None):
     neutral_formal = ["thank you"]
     neutral_informal = ["thanks"]
     pos = ["thank you very much"]
@@ -107,7 +107,7 @@ def thanks(persona, sentiment=None, formal=None):
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def apology(persona, sentiment=None, formal=None):
+def apology(persona, conversation, sentiment=None, formal=None):
     neutral_formal = ["I apologize", "I did not mean to offend",
         "I did not intend any offense", "I did not mean any offense"]
     neutral_informal = ["I am sorry"]
@@ -118,17 +118,17 @@ def apology(persona, sentiment=None, formal=None):
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def backchannel(persona, sentiment=None, formal=None):
+def backchannel(persona, conversation, sentiment=None, formal=None):
     neutral = ["uh-huh", "hmm", "mm-hmm", "okay", "I see"]
     pos = ["wow"]
 
     return sentiment_select(persona, sentiment, neutral, pos)
 
-def request_confirmation(persona, sentiment=None, formal=None):
+def request_confirmation(persona, conversation, sentiment=None, formal=None):
     neutral = ["really", "Is that so"]
     return sentiment_select(persona, sentiment, neutral)
 
-def request_clarification(persona, sentiment=None, formal=None):
+def request_clarification(persona, conversation, sentiment=None, formal=None):
     neutral = ["could you repeat that", "could you clarify that",
         "what do you mean", "In what way", "could you elaborate on that",
         "could you rephrase that"]
@@ -138,14 +138,14 @@ def request_clarification(persona, sentiment=None, formal=None):
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 # TODO requires past phrase, include topic
-def query(persona, sentiment=None, formal=None, topic="that"):
+def query(persona, conversation, sentiment=None, formal=None, topic="that"):
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
 """
     Probably will need more articulation for Statement and Question.
     Such as ensuring a statement was not already said or asked...
 """
-def question_information(persona, sentiment=None, formal=None, topic="that",
+def question_information(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
     neutral = ["tell me more", "inform me on " + topic]
     pos = ["please", "could you"]
@@ -153,7 +153,7 @@ def question_information(persona, sentiment=None, formal=None, topic="that",
     neg = ["what else is there on " + topic]
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def question_experience(persona, sentiment=None, formal=None, topic="that",
+def question_experience(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
     neutral = [
         "do you have an experience with " + topic,
@@ -178,7 +178,7 @@ def question_experience(persona, sentiment=None, formal=None, topic="that",
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def question_preference(persona, sentiment=None, formal=None, topic="that",
+def question_preference(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
     if question_type == QuestionType.polar:
         neutral = ["do you have a preference on " + topic]
@@ -188,7 +188,7 @@ def question_preference(persona, sentiment=None, formal=None, topic="that",
             + topic]
     return sentiment_select(persona, sentiment, neutral, neg=neg)
 
-def question_opinion(persona, sentiment=None, formal=None, topic="that",
+def question_opinion(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
     if question_type == QuestionType.polar:
         neutral = ["do you have a opinion on " + topic]
@@ -198,7 +198,7 @@ def question_opinion(persona, sentiment=None, formal=None, topic="that",
 
     return sentiment_select(persona, sentiment, neutral, neg=neg)
 
-def question_desire(persona, sentiment=None, formal=None, topic="that",
+def question_desire(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
     if topic == "general" or topic == "self_user":
         neutral = [
@@ -214,14 +214,14 @@ def question_desire(persona, sentiment=None, formal=None, topic="that",
         neg = ["I suppose you want to do something with regards to " + topic]
     return sentiment_select(persona, sentiment, neutral, neg=neg)
 
-def question_plan(persona, sentiment=None, formal=None, topic="that",
+def question_plan(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
-    if topic == "general" or topic == "self_user":
-        neutral = ["what are your plans"]
-        neg = ["what are your" + negative_adj(formal) + " plans"]
-    return sentiment_select(persona, sentiment, neutral, pos, neg)
+    #if topic == "general" or topic == "self_user":
+    neutral = ["what are your plans"]
+    neg = ["what are your" + negative_adj(formal) + " plans"]
+    return sentiment_select(persona, sentiment, neutral, neg=neg)
 
-def statement_information(persona, sentiment=None, formal=None, topic="that",
+def statement_information(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
     neutral = [
         "I do not have much to say on " + topic,
@@ -233,7 +233,7 @@ def statement_information(persona, sentiment=None, formal=None, topic="that",
 
     return sentiment_select(persona, sentiment, neutral,neg=neg)
 
-def statement_experience(persona, sentiment=None, formal=None, topic="that",
+def statement_experience(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
     neutral = [
         "I have no experience with " + topic,
@@ -247,12 +247,12 @@ def statement_experience(persona, sentiment=None, formal=None, topic="that",
 
     return sentiment_select(persona, sentiment, neutral,neg=neg)
 
-def statement_preference(persona, sentiment=None, formal=None, topic="that",
+def statement_preference(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
-    return statement_opinion(persona, sentiment, formal, topic, question_type)
-    #return sentiment_select(persona, sentiment, neutral, pos, neg)
+    return statement_opinion(persona, conversation, sentiment, formal, topic, question_type)
+    #return sentiment_select(persona, conversation, sentiment, neutral, pos, neg)
 
-def statement_opinion(persona, sentiment=None, formal=None, topic="that",
+def statement_opinion(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
     neutral = ["I am impartial to " + topic]
     neg = [
@@ -265,7 +265,7 @@ def statement_opinion(persona, sentiment=None, formal=None, topic="that",
 
     return sentiment_select(persona, sentiment, neutral, pos, neg)
 
-def statement_desire(persona, sentiment=None, formal=None, topic="that",
+def statement_desire(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
     neutral = [
         "I have no desire with regards to " + topic,
@@ -283,7 +283,7 @@ def statement_desire(persona, sentiment=None, formal=None, topic="that",
 
     return sentiment_select(persona, sentiment, neutral,neg=neg)
 
-def statement_plan(persona, sentiment=None, formal=None, topic="that",
+def statement_plan(persona, conversation, sentiment=None, formal=None, topic="that",
         question_type=None):
     neutral = [
         "I have no plans with regards to " + topic,
@@ -309,17 +309,54 @@ def insult_gen():
 def compliment():
     return
 
-def silence(persona):
+def silence(persona, conversation=None):
     return ""
 
-def paraphrase(persona, sentiment=None,formal=None,):
+def paraphrase(persona, conversation, sentiment=None, formal=None):
     #TODO: I cannot paraphrase yet. Just confirm or clarify what you said.
-    return request_clarification(persona, sentiment, formal)
+    return request_confirmation(persona, conversation, sentiment, formal)
 
-"""
-    Helper Methods:
-"""
+# non-dialogue act specific:
+def query_user_general_experience(persona, conversation, sentiment=None,
+        formal=None):
+    netural_formal = [
+        "anything new with you",
+        "what is new with you",
+        "what are you up to"
+    ]
+    neutral_informal = [
+        "sup",
+        "what's up with you",
+        "what's new",
+        "what's up",
+        "anything new",
+        "what's going on"
+    ]
+    neutral = formality_select(neutral_formal, neutral_informal, formal)
+
+    return choice(neutral)
+
+def query_user_general_information(persona, conversation, sentiment=None,
+        formal=None):
+    netural_formal = [
+        "how are you",
+        "how are you doing",
+        "how have you been",
+    ]
+    neutral_informal = [
+        "how's everything",
+        "how is everything"
+    ]
+    neutral = formality_select(neutral_formal, neutral_informal, formal)
+
+    return choice(neutral)
+
+# Helper Methods:
 def sentiment_select(persona, sentiment, neutral, pos=None, neg=None):
+    """
+    Selects element from the provided lists of different sentiment types.
+    :return: Returns a randomly selected element based on sentiment
+    """
     # TODO perhaps have persona/sentiment accept either a person obj, or int val
     # use conditional statement to determine type and how to handle.
     sentiment = sentiment if sentiment is not None else persona.personality.mood
@@ -331,6 +368,11 @@ def sentiment_select(persona, sentiment, neutral, pos=None, neg=None):
         return choice(neutral)
 
 def formality_select(formal_list, informal, formal=None):
+    """
+    Returns a list with the appropriate type of formality in its elements.
+    :param formal: Bool that determines if formal or not.
+    :return: Returns a list based on formality
+    """
     if formal_list is None:
         return formal_list + informal
     elif formal_list:

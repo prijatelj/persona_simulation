@@ -1,3 +1,3 @@
 Tests
 ==
-All unit tests.
+To run the unit tests, run pytest from the repositories root directory.
