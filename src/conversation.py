@@ -148,8 +148,10 @@ class Utterance(object):
     :param question_type: QuestionType of Utterance if DialogueAct is question
     :param date_time: datetime of when the Utterance was spoken
     """
+    # TODO if given only a persona, rather than a speaker name and personality
+    #   traits, then infer those from the persona.
     def __init__(self, speaker, dialogue_act, topic, sentiment, assertiveness,
-            text=None, question_type=None, date_time=datetime.now()):
+            text=None, question_type=None, date_time=None):
         assert text is None or isinstance(text, str)
         assert isinstance(topic, str)
         assert isinstance(sentiment, int) and sentiment >= 1 and sentiment <= 10
@@ -157,6 +159,9 @@ class Utterance(object):
             and assertiveness <= 10
         assert isinstance(dialogue_act, DialogueAct)
         assert isinstance(speaker, str)
+
+        if date_time is None:
+            date_time = datetime.now()
 
         if isinstance(text, str):
             self.__text = text.strip()
@@ -351,10 +356,15 @@ class Conversation(object):
         """ Peeks at last entered utterance """
         #return self.__utterances[len(self.__utterances) - 1].copy()
         # for OrderedDict
+        if len(self.__utterances) == 0:
+            return None
         return self.__utterances[next(reversed(self.__utterances))].copy()
 
-    def add_utterance(self, utterance, date_time=datetime.now()):
+    # TODO datatime.now() in default only called once. Error...
+    def add_utterance(self, utterance, date_time=None):
         assert isinstance(utterance, Utterance)
+        if date_time is None:
+            date_time=datetime.now()
         assert isinstance(date_time, datetime)
         self.__utterances[date_time] = utterance
         #self.__utterances.add(utterance)
@@ -380,9 +390,9 @@ class Conversation(object):
 
         s += "\nParticipants:\n"
         for p in self.__participants:
-            s += str(p)
+            s += str(p) + " "
 
-        return s
+        return s.strip()
 
     def __repr__(self):
         return self.__str__()
@@ -462,8 +472,10 @@ class ConversationHistory(object):
                 )
         return utterances
 
-    def add_conversation(self, conversation, date_time=datetime.now()):
+    def add_conversation(self, conversation, date_time=None):
         assert isinstance(conversation, Conversation)
+        if date_time is None:
+            date_time=datetime.now()
         assert isinstance(date_time, datetime)
         self.__conversations[date_time] = conversation
         self.__add_conversation_to_topic(conversation, date_time)
