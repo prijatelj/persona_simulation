@@ -55,7 +55,9 @@ def static_matrix(conversation, chatbot, user, personas=None):
         utterance.set_text(text)
         return utterance
 
-    if len(conversation.topic_to_utterances.keys()) <= 1:
+    #if len(conversation.topic_to_utterances.keys()) <= 0:
+    if conversation.new_convo:
+        conversation.new_convo = False
         # New conversation started
         if last_utterance.dialogue_act == DA.greeting:
             utterance = Utterance(
@@ -107,21 +109,31 @@ def static_matrix(conversation, chatbot, user, personas=None):
             return response_matrix(last_utterance, chatbot, conversation)
 
 def response_matrix(last_utterance, chatbot, conversation):
-    mat = np.loadtxt(open("../data/da_matrix.csv"), delimiter=",", skiprows=1,
-        usecols=range(1,27))
-    mat = mat / np.sum(mat, axis=0)
+    with open("../data/da_matrix.csv") as f_matrix:
+        mat = np.loadtxt(f_matrix, delimiter=",", skiprows=1,
+            usecols=range(1,27))
+        mat = mat / np.sum(mat, axis=0)
 
-    da_names = [da.name for da in DA if da.name not in
-        ["statement", "question", "response_action"]]
-    response_col = da_names.index(last_utterance.dialogue_act.name)
-    utterance = Utterance(
-        chatbot.name,
-        DA[np.random.choice(da_names, p=mat[:, response_col])],
-        last_utterance.topic,
-        min(max(np.random.normal(chatbot.personality.mood, 2), 10), 1),
-        min(max(np.random.normal(chatbot.personality.assertiveness, 2), 10), 1)
-    )
+        da_names = [da.name for da in DA if da.name not in
+            ["statement", "question", "response_action"]]
+        response_col = da_names.index(last_utterance.dialogue_act.name)
 
-    text = nlg.generate_response_text(utterance, chatbot, conversation)
-    utterance.set_text(text)
-    return utterance
+        sentiment = np.random.normal(chatbot.personality.mood, 2)
+        while sentiment < 1 or sentiment > 10:
+            sentiment = np.random.normal(chatbot.personality.mood, 2)
+
+        assertiveness = np.random.normal(chatbot.personality.mood, 2)
+        while assertiveness < 1 or assertiveness > 10:
+            assertiveness = np.random.normal(chatbot.personality.mood, 2)
+
+        utterance = Utterance(
+            chatbot.name,
+            DA[np.random.choice(da_names, p=mat[:, response_col])],
+            last_utterance.topic,
+            int(sentiment),
+            int(assertiveness)
+        )
+
+        text = nlg.generate_response_text(utterance, chatbot, conversation)
+        utterance.set_text(text)
+        return utterance

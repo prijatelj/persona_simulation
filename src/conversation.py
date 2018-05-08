@@ -313,6 +313,8 @@ class Utterance(object):
 
 class Conversation(object):
     """ A representation of a single conversation """
+    new_convo = True
+
     def __init__(self, participants=set(), utterances=OrderedDict(),
             topic_to_utterances=None):
         """
@@ -364,7 +366,7 @@ class Conversation(object):
     def add_utterance(self, utterance, date_time=None):
         assert isinstance(utterance, Utterance)
         if date_time is None:
-            date_time=datetime.now()
+            date_time = datetime.now()
         assert isinstance(date_time, datetime)
         self.__utterances[date_time] = utterance
         #self.__utterances.add(utterance)
@@ -475,7 +477,7 @@ class ConversationHistory(object):
     def add_conversation(self, conversation, date_time=None):
         assert isinstance(conversation, Conversation)
         if date_time is None:
-            date_time=datetime.now()
+            date_time = datetime.now()
         assert isinstance(date_time, datetime)
         self.__conversations[date_time] = conversation
         self.__add_conversation_to_topic(conversation, date_time)
