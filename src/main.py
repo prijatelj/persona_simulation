@@ -6,7 +6,7 @@ Main interface to test/run the simulation.
 from nlu.nlu_cli import nlu_cli, parse_args
 from persona import Persona
 from conversation import Conversation, DialogueAct as DA
-from intelligent_agent import intelligent_agent
+from intelligent_agent import intelligent_agent, tactic
 from nlg import nlg
 
 def main():
@@ -52,11 +52,14 @@ def main():
         # Simulated Personality must determine how to respond and what to say
         # This is mostly outside of NLG, although the what to say part somewhat
         # overlaps with NLG task of content determination.
-        response_utterance = intelligent_agent.decide_response(
-            conversation_history,
-            simulated_persona.name,
-            persona_dict
-        )
+        try:
+            response_utterance = intelligent_agent.decide_response(
+                conversation_history,
+                simulated_persona.name,
+                persona_dict
+            )
+        except:
+            response_utterance = tactic.psychiatrist(utterance, chatbot.name)
 
         # TODO ensure NLG expects meta text!
         #   TODO OR, make it so IA's tactics create the text.
