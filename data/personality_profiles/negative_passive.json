@@ -1,0 +1,10 @@
+{
+    "personality profile": {
+        "name": "Negative Passive",
+        "personality": {
+            "assertiveness": 1,
+            "mood": 1
+        },
+        "preferences": null
+    }
+}
