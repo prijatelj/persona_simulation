@@ -33,9 +33,9 @@ def generate_response_text(utterance_metadata, persona, conversation):
     return text
 
 def statement(utterance_metadata, persona, conversation):
-    if utterance_metadata.dialogue_act == DA.statement:
-        text = generic_response.statement(persona, conversation)
-    elif utterance_metadata.dialogue_act == DA.statement_information:
+    #if utterance_metadata.dialogue_act == DA.statement:
+    #    text = generic_response.statement(persona, conversation)
+    if utterance_metadata.dialogue_act == DA.statement_information:
         text = generic_response.statement_information(persona, conversation)
     elif utterance_metadata.dialogue_act == DA.statement_experience:
         text = generic_response.statement_experience(persona, conversation)
@@ -53,9 +53,9 @@ def statement(utterance_metadata, persona, conversation):
     #return utterance_metadata
 
 def question(utterance_metadata, persona, conversation):
-    if utterance_metadata.dialogue_act == DA.question:
-        text = generic_response.question(persona, conversation)
-    elif utterance_metadata.dialogue_act == DA.question_information:
+    #if utterance_metadata.dialogue_act == DA.question:
+    #    text = generic_response.question(persona, conversation)
+    if utterance_metadata.dialogue_act == DA.question_information:
         text = generic_response.question_information(persona, conversation)
     elif utterance_metadata.dialogue_act == DA.question_experience:
         text = generic_response.question_experience(persona, conversation)

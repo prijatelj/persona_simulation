@@ -40,7 +40,9 @@ def nlu_cli(default_mood, user_id):
     #loop until they select correct dialogue act, show help after first fail
     dialogue_act = ""
     first = True
-    da_names = [da.name for da in DialogueAct]
+    da_names = [da.name for da in DialogueAct if da.name not in
+        ['statement', 'question', 'response_action']
+    ]
     while dialogue_act not in da_names:
         dialogue_act = input("Enter dialogue Act: ").strip().lower()
 
