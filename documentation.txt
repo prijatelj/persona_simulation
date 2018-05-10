@@ -1,0 +1,137 @@
+Persona Simulation
+Documentation
+Version 0.1
+Derek S. Prijatelj
+==
+
+usage: Ensure you are within the src/ directory:
+
+python main.py [relative/path/to/personality_profile]
+
+Note all default personality profiles are stored within data/personality_profiles/
+==
+
+Throughout the custom classes in the project, you will note that there a methods that have the @property above them. This is to emulate the functionality of private variables in other object oriented languages. Python does not have true private fields and methods for its objects because they can still be accessed, but setting it up this way is a convenience feature for the user so they do not accidently overwrite a variable unintentionally and that error stack tracebacks are more easily understandable.
+
+For some of the properties they return a copy rather than the actual property's field itself. This is because those that are copied are mutable elments and this avoids them from being edited or changed by mistake. Also, aides in error stack tracebacks for easier debugging. Those that do not return copies are immutable objects and cannot be changed.
+
+Also, various python object functions have been defined. These are the functions whose names are encased in double underscores (ex: __str__()). These are to add the ability to work with the inner workings of python. For example when a class has __str__() defined and str(object) is called, the value of __str__() is returned.
+
+This is overwriting the default object functions and providing custom ones for the object and allows for the custom object to be hashed, compared to others of its type, turned into a string representation, and even retrieve a dictionary of the attributes of the class. The latter is useful for serializing the objects into JSON files.
+
+==
+
+conversation.py
+--
+conversation.py stores all classes and functions related to engaging in a conversation.
+
+DialogueAct: Enumeration of all dialogue acts. 30 dialogue acts overall composed of 3 meta tags and 27 functional tags. The meta tags are statement, question, and response action and are all used to help establish groupings of the dialogue acts for use in the system.
+
+
+QuestionAct: Enumeration of all question types. The question type must be provided whenever the dialogue act for the utterance is a question.
+
+
+The various helper functions all pertain to the Utterance class and the above enumerations. They help determine when the dialogue act is within a certain group, such as if it is in the statement or question grouping. Helper functions are also provided to aide in the conversion of a statement dialogue act to its corresponding question dialogue act and the other way around too. This is good to ensure that the code pertaining to such actions remain with the actual Enumeration classes, and then less changing is required throughout the code.
+
+There are also two helper functions to determine if the topic (str) is of either the user's self or the bot's self.
+
+
+Utterance: This class contains all of the required NLU features of an Utterance.
+    Attributes:
+    speaker - str - speaker of utterance as a unique persona_id
+    dialogue_act - DialogueAct - dialogue act of the utterance
+    topic - str - topic - the topic of the utterance
+    sentiment - int - an integer from [1,10] on the range of negative to positive that defines the utterance's overall sentiment
+    assertiveness - int - an integer from [1,10] on the range of passive to assertive that defines the overall conversational role of the utterance (listening-oriented or conversation leading)
+    text - str - actual text of the utterance
+    question_type - QuestionType - the question type of the utterance
+    date_time - datetime - The datetime of the class for chronological ordering and knowing when the Utterance was stated.
+    --
+    Functions:
+    copy() a convenience function so the outside code does not have to import copy to copy the object.
+
+    set_text(str): sets the text of the utterance to the provided string
+--
+
+Conversation: This class represents a conversation. It consistes of the sequence of Utterances, a set of all speaking participants in the conversation and a convenience dictionary (hash map) of topic to Utterances for easier finding of all Utterances related to a topic in the Conversation.
+    Attributes:
+    utterances - OrderedDict({datetime:Utterance}) - an ordered dictionary (hash map) of datetime to Utterance. The datetime is used to know the sequence of the Utterance's occurrence. There is plans to phase out the OrderedDict for a sorted set, but currently Utterances are mutable (given set_text) and so this is unpythonic to make Utterances hashable, which is why they are not in a set. The OrdereDict was used over a list for easier gathering of Utterances at a specific datetime, in the case the Utterance ever needed found at a certain datetime to check of consistency issues in Conversation or ConversationHistory. datetime is also the primary quality of Utterances that would be used to hash the Utterance (although not the only feature).
+    participants - set(str) - a set of the unique persona_ids of all speaking participants in the conversation (those that have said an utterance).
+    topic_to_utterances - dict(str:list(Utterance)) - a dictionary (hash map) that hashes the string topic to a list of Utterances that are all are on that topic. This is a simple convenience property.
+    last_utterance - Utterance - the lastest Utterance spoken in the conversation. A simple convenience property.
+    --
+--
+
+ConversationHistory: The a data storage class that contains a history of conversations. The intended usage is that a ConversationHistory contains all the conversations pertaining to a specific set of participants, but it may be used to contain any Conversation objects desired.
+    Attributes:
+    conversations - OrderedDict({datetime:Conversation}) - an OrderedDict of that hashes the initial start time (datetime of first Utterance) of all Conversations to themselves. This is for ordering of the conversations based on start time. As was with Utterance.utterances, this is planned on being repaced with a set, but the current implementation of Conversation object is mutable and therefor unpythonic to allow hashing.
+    topic_to_conversations - dict(str:Conversation) - a dictionary (hash map) of string topic to all conversations that include that topic within their Utterances. This is a convenience function for easily finding all Conversations that share a topic that was discussed.
+--
+    Functions:
+    save_json(str) - saves the ConversationHistory as a JSON at the given path
+    load_json(str) - loads the ConversationHistory from a JSON file from the given path.
+    extract_dict(dict) - helper function to create the attributes of the ConversationHistory to create the object.
+==
+
+persona.py
+--
+Personality: The personality class that is behind every persona.
+    Attributes:
+    mood - int - integer value within the range [1,10] that represents the polar mood of the persona.
+    assertiveness - int - integer value within the range [1,10] that represents the persona's natural tendency as a role in conversations (either a passive listener or an assertive leader of the conversation)
+--
+
+Persona: The persona class, which represents the in code equivalent to the Personality Profile (name change may be necessary in future versions, but given that this project focused on personas, it was kept for clarity and consistency).
+    Attributes:
+    name - str - Name/unique persona id of the Persona
+    personality - Personality - the personality of the Persona
+    topic_sentiment - dict(str:int) - A convenience property for finding the Persona's sentiment towards a topic.
+    --
+    Functions:
+    topic_magnitude(str,int) - determines the difference between the desired sentiment and the current sentiment on a topic.
+    save_json(str) - saves the Personality profile at the specified path as a JSON
+    load_json(str) - loads the Personality profile from the provided path to a JSON file.
+    extract_dict(dict) - helper function to create the attributes of the ConversationHistory to create the object.
+==
+
+nlu/nlu_cli.py
+--
+The current stand in for the natural language understanding (NLU) module. The user is guided through a command line interface to fill in the NLU information of the user's current input utterance and to aide in updating the systems persona simulation of the user.
+==
+
+intelligent_agent/intelligent_agent.py
+--
+The interface to the rest of the intelligent agent files. Meant to serve as the outward facing interface of the intelligent agent module and to be used to easily select different intelligent agents. Currently only one complete intelligent agent exists, that is the probability matrix intelligent agent.
+==
+
+intelligent_agent/static_matrix.py
+--
+The prototype's intelligent agent as defined in the paper. It relies on the provided static probability matrix to determine the probability distribution for mapping input dialogue acts to response dialogue acts. It uses a normal distribution depending on the persona's personality traits to randomly determine how the Persona will respond with regards to sentiment and assertiveness. This controlled randomness mimics that of a natural human.
+==
+
+intelligent_agent/tactic.py
+--
+Contains the tactics to be used by the intelligent agent. This was mostly unused in the prototype, hence is empty fuctions usd as placeholders. The idea is that the intelligent agent determines the strategy and the tactics are the pieces that the intelligent agents uses to employ their strategy.
+==
+
+intelligent_agent/decision_tree_static.py
+--
+A rule-based approach to the intelliegent agent that uses manually made decision trees. This is incomplete and not implemented in the prototype. This serves as the beginnings of future versions of PerSim/personality simulation.
+==
+
+nlg/nlg.py
+--
+The main interface to the rest of the NLG module. This is meant to handle the passing of all necessary data to the correct NLG components to generate the text. This returns a string of text that corresponds to the provided metadata Utterance, Convesation, and personas.
+==
+
+nlg/generic_response.py
+--
+A set of functions to be called to generate the text for the corresponding dialogue act based on the sentiment, assertiveness, and formality (currently not implemented) of the Persona and Utterance. The functions make use of the Conversation (will be ConversationHistory in future versions) to a limited degree to help in generating the response, especially in the repeat dialogue act when the text is a repeat of the other speaker's pervious Utterance. The text that is "generated" is selected from a handcrafted list via controlled randomness to create natural responses. This controlled randomness is randomness after the appropriate selection methods have been applied, ie. sentiment, assertiveness, and formality.
+
+The functions are mostly one-to-one with the dialogue acts, but there are some more that are either helper functions or more specific functions for generating special types of responses, such as insults.
+==
+
+nlg/insult.py
+--
+An insult generator that uses the Shakespearean Insult Kit which consists of 3 sets of words from or related to Shakespeare: adverbs, adjectives, and nouns. They are then randomly selected to generate the insult. Its humorous and insulting, which suits a negative personality.
+==
